@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<title>Marketing Klausur – Interaktives Lerntool</title>
+<meta name="description" content="Interaktives Lerntool für die Marketing-Klausur (FAU): Konzepte, Rechen-Trainer, MC-Selbsttest, Karteikarten & Diagramme.">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f1420">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Marketing Klausur">
+<meta name="format-detection" content="telephone=no">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+<style>
+html{-webkit-text-size-adjust:100%}
+:root{
+  --bg:#0f1420; --bg2:#161d2e; --card:#1c2436; --card2:#232d43;
+  --line:#2d3852; --tx:#e8edf7; --tx2:#9aa7c2; --tx3:#6b779a;
+  --acc:#4f7cff; --acc2:#7b9bff; --gold:#ffb43a; --green:#37d399; --red:#ff5c72;
+  --hoch:#ff5c72; --mittel:#ffb43a; --niedrig:#5b6a8f;
+  --shadow:0 10px 40px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--tx);line-height:1.55;display:flex;overflow:hidden}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:var(--line);border-radius:6px}
+::-webkit-scrollbar-track{background:transparent}
+
+/* SIDEBAR */
+#sidebar{width:290px;flex-shrink:0;background:linear-gradient(180deg,#131a29,#0d1220);border-right:1px solid var(--line);height:100vh;overflow-y:auto;padding:0 0 30px}
+.brand{padding:22px 22px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:linear-gradient(180deg,#131a29,#131a29ee);backdrop-filter:blur(6px);z-index:5}
+.brand h1{font-size:19px;font-weight:700;letter-spacing:.2px}
+.brand .sub{font-size:12px;color:var(--tx2);margin-top:3px}
+.gprog{margin-top:14px}
+.gprog .bar{height:8px;background:var(--bg);border-radius:5px;overflow:hidden;border:1px solid var(--line)}
+.gprog .fill{height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--green));transition:width .5s}
+.gprog .lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--tx2);margin-top:6px}
+.navsec{padding:14px 12px 4px;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--tx3);font-weight:700}
+.navitem{display:flex;align-items:center;gap:11px;padding:10px 16px;margin:2px 8px;border-radius:10px;cursor:pointer;font-size:14.5px;color:var(--tx2);transition:.15s;position:relative}
+.navitem:hover{background:var(--card);color:var(--tx)}
+.navitem.active{background:linear-gradient(90deg,rgba(79,124,255,.22),rgba(79,124,255,.05));color:#fff;font-weight:600}
+.navitem.active::before{content:"";position:absolute;left:0;top:20%;height:60%;width:3px;background:var(--acc);border-radius:3px}
+.navitem .ic{font-size:17px;width:22px;text-align:center}
+.navitem .mprog{margin-left:auto;font-size:10px;color:var(--tx3);background:var(--bg);padding:2px 7px;border-radius:20px;border:1px solid var(--line)}
+.navitem.done .mprog{color:var(--green);border-color:var(--green)}
+
+/* MAIN */
+#main{flex:1;height:100vh;overflow-y:auto;scroll-behavior:smooth}
+.wrap{max-width:960px;margin:0 auto;padding:34px 40px 90px}
+.crumb{font-size:12.5px;color:var(--tx3);margin-bottom:6px;letter-spacing:.3px}
+h2.page{font-size:28px;font-weight:700;margin-bottom:6px}
+.pdesc{color:var(--tx2);font-size:15px;margin-bottom:26px;max-width:640px}
+
+/* badges */
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:.4px;text-transform:uppercase}
+.b-hoch{background:rgba(255,92,114,.15);color:var(--hoch);border:1px solid rgba(255,92,114,.35)}
+.b-mittel{background:rgba(255,180,58,.13);color:var(--mittel);border:1px solid rgba(255,180,58,.3)}
+.b-niedrig{background:rgba(91,106,143,.15);color:var(--niedrig);border:1px solid rgba(91,106,143,.3)}
+.b-rechnen{background:rgba(55,211,153,.13);color:var(--green);border:1px solid rgba(55,211,153,.3)}
+
+/* concept card */
+.concept{background:var(--card);border:1px solid var(--line);border-radius:16px;margin-bottom:16px;overflow:hidden;transition:.2s}
+.concept.open{border-color:var(--acc)}
+.chead{display:flex;align-items:center;gap:14px;padding:17px 20px;cursor:pointer;user-select:none}
+.chead:hover{background:var(--card2)}
+.chk{width:24px;height:24px;border-radius:7px;border:2px solid var(--line);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;color:transparent;transition:.15s;cursor:pointer}
+.chk.on{background:var(--green);border-color:var(--green);color:#0d1220}
+.ctitle{font-size:16.5px;font-weight:600;flex:1}
+.cmeta{display:flex;gap:7px;align-items:center;flex-shrink:0}
+.arrow{color:var(--tx3);transition:.25s;font-size:13px}
+.concept.open .arrow{transform:rotate(90deg)}
+.cbody{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.cinner{padding:4px 22px 22px 22px}
+.cinner p{margin:10px 0;color:var(--tx)}
+.cinner .def{background:linear-gradient(90deg,rgba(79,124,255,.12),transparent);border-left:3px solid var(--acc);padding:12px 16px;border-radius:0 10px 10px 0;margin:14px 0;font-size:14.5px}
+.cinner .def b{color:var(--acc2)}
+.cinner ul{margin:10px 0 10px 4px;list-style:none}
+.cinner li{padding:5px 0 5px 22px;position:relative;color:var(--tx)}
+.cinner li::before{content:"▸";position:absolute;left:2px;color:var(--acc);font-size:13px;top:6px}
+.cinner .tip{background:rgba(255,180,58,.1);border:1px solid rgba(255,180,58,.28);border-radius:10px;padding:11px 15px;margin:14px 0;font-size:14px}
+.cinner .tip b{color:var(--gold)}
+.cinner .exam{background:rgba(255,92,114,.09);border:1px solid rgba(255,92,114,.28);border-radius:10px;padding:11px 15px;margin:14px 0;font-size:13.5px;color:var(--tx)}
+.cinner .exam b{color:var(--hoch)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+@media(max-width:680px){.grid2{grid-template-columns:1fr}}
+.mini{background:var(--bg2);border:1px solid var(--line);border-radius:11px;padding:13px 15px}
+.mini h5{font-size:13.5px;color:var(--acc2);margin-bottom:5px}
+.mini p{font-size:13.5px;margin:3px 0;color:var(--tx2)}
+.formula{background:#0c1526;border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-family:'Cambria Math',Georgia,serif;font-size:16px;text-align:center;margin:12px 0;color:#dbe6ff;overflow-x:auto}
+table.dt{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px}
+table.dt th,table.dt td{border:1px solid var(--line);padding:8px 10px;text-align:center}
+table.dt th{background:var(--bg2);color:var(--acc2);font-weight:600}
+table.dt td:first-child{text-align:left;color:var(--tx2)}
+
+/* overview dashboard */
+.hero{background:radial-gradient(120% 130% at 15% 0%,rgba(79,124,255,.18),transparent 55%),var(--card);border:1px solid var(--line);border-radius:20px;padding:30px 32px;margin-bottom:24px;position:relative;overflow:hidden}
+.hero h2{font-size:26px;margin-bottom:8px}
+.hero p{color:var(--tx2);max-width:640px;font-size:15px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0}
+@media(max-width:680px){.stats{grid-template-columns:1fr 1fr}}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.stat .n{font-size:26px;font-weight:700;color:var(--acc2)}
+.stat .l{font-size:12.5px;color:var(--tx2);margin-top:2px}
+.examstruct{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0}
+@media(max-width:680px){.examstruct{grid-template-columns:1fr}}
+.esbox{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+.esbox h4{font-size:15px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.esrow{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed var(--line);font-size:13.5px;color:var(--tx2)}
+.esrow:last-child{border:none}
+.esrow b{color:var(--tx)}
+.modcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;margin-top:8px}
+.modcard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;cursor:pointer;transition:.18s}
+.modcard:hover{transform:translateY(-3px);border-color:var(--acc);box-shadow:var(--shadow)}
+.modcard .ic{font-size:24px;margin-bottom:8px}
+.modcard h4{font-size:15px;margin-bottom:4px}
+.modcard .pb{height:6px;background:var(--bg);border-radius:4px;overflow:hidden;margin-top:10px}
+.modcard .pf{height:100%;background:linear-gradient(90deg,var(--acc),var(--green));width:0;transition:.5s}
+.modcard .pl{font-size:11px;color:var(--tx3);margin-top:5px}
+
+/* tool tabs (calc / mc / flash) */
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+.tbtn{background:var(--card);border:1px solid var(--line);color:var(--tx2);padding:9px 16px;border-radius:10px;cursor:pointer;font-size:13.5px;font-weight:600;transition:.15s}
+.tbtn:hover{color:var(--tx);border-color:var(--acc)}
+.tbtn.active{background:var(--acc);color:#fff;border-color:var(--acc)}
+
+/* calculator */
+.calc{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin-bottom:18px}
+.calc h3{font-size:18px;margin-bottom:4px}
+.calc .task{color:var(--tx2);font-size:14px;margin-bottom:16px}
+.calc label{font-size:12.5px;color:var(--tx2);display:block;margin-bottom:5px}
+.inrow{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.infield{flex:1;min-width:130px}
+.calc input{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--tx);padding:9px 12px;border-radius:9px;font-size:14px;font-family:inherit}
+.calc input:focus{outline:none;border-color:var(--acc)}
+.btn{background:var(--acc);color:#fff;border:none;padding:10px 20px;border-radius:9px;cursor:pointer;font-size:14px;font-weight:600;transition:.15s}
+.btn:hover{background:var(--acc2)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--tx2)}
+.btn.ghost:hover{border-color:var(--acc);color:var(--tx)}
+.steps{margin-top:18px;border-top:1px solid var(--line);padding-top:16px;display:none}
+.steps.show{display:block;animation:fade .4s}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.step{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:13px 16px;margin-bottom:10px}
+.step .sn{font-size:11px;color:var(--acc2);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.step .sf{font-family:'Cambria Math',Georgia,serif;font-size:15px;color:#dbe6ff}
+.result{background:linear-gradient(90deg,rgba(55,211,153,.15),transparent);border:1px solid rgba(55,211,153,.4);border-radius:11px;padding:14px 18px;margin-top:6px;font-size:15px}
+.result b{color:var(--green);font-size:17px}
+
+/* MC quiz */
+.mcq{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin-bottom:16px}
+.mcq .qtop{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:6px}
+.mcq .qnum{font-size:12px;color:var(--tx3);font-weight:700}
+.mcq .qt{font-size:16px;font-weight:600;margin-bottom:14px}
+.mcopt{display:flex;align-items:flex-start;gap:11px;padding:11px 14px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:.13s;font-size:14px}
+.mcopt:hover{border-color:var(--acc);background:var(--card2)}
+.mcopt .box{width:20px;height:20px;border-radius:6px;border:2px solid var(--line);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent;margin-top:1px}
+.mcopt.sel .box{background:var(--acc);border-color:var(--acc);color:#fff}
+.mcopt.correct{border-color:var(--green);background:rgba(55,211,153,.1)}
+.mcopt.correct .box{background:var(--green);border-color:var(--green);color:#0d1220}
+.mcopt.wrong{border-color:var(--red);background:rgba(255,92,114,.1)}
+.mcopt.wrong .box{background:var(--red);border-color:var(--red);color:#fff}
+.mcopt .ol{font-weight:700;color:var(--tx3);margin-right:2px}
+.mcfeedback{margin-top:12px;padding:12px 15px;border-radius:10px;font-size:13.5px;display:none}
+.mcfeedback.show{display:block;animation:fade .3s}
+.mcfeedback.ok{background:rgba(55,211,153,.1);border:1px solid rgba(55,211,153,.35)}
+.mcfeedback.no{background:rgba(255,92,114,.1);border:1px solid rgba(255,92,114,.35)}
+.mcfeedback b{color:var(--acc2)}
+.mcbtns{display:flex;gap:10px;margin-top:14px}
+.scorebar{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center}
+.scorebar .sc{font-size:22px;font-weight:700;color:var(--acc2)}
+
+/* flashcards */
+.fcwrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.flip{background:transparent;height:180px;perspective:1200px;cursor:pointer}
+.flipin{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.flip.flipped .flipin{transform:rotateY(180deg)}
+.fface{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:14px;padding:18px;display:flex;flex-direction:column;justify-content:center;border:1px solid var(--line)}
+.ffront{background:linear-gradient(135deg,var(--card2),var(--card))}
+.ffront h4{font-size:17px;color:var(--tx)}
+.ffront .hint{position:absolute;bottom:12px;left:18px;font-size:11px;color:var(--tx3)}
+.ffront .tag{position:absolute;top:12px;right:12px}
+.fback{background:linear-gradient(135deg,#1a2338,#141b2b);transform:rotateY(180deg);overflow-y:auto}
+.fback p{font-size:13.5px;color:var(--tx)}
+
+/* diagram */
+.diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin-bottom:18px}
+.diagram h3{font-size:18px;margin-bottom:4px}
+.diagram .task{color:var(--tx2);font-size:13.5px;margin-bottom:8px}
+.dghint{font-size:12.5px;color:var(--tx3);margin-bottom:14px;font-style:italic}
+.svgbox{width:100%;overflow-x:auto}
+.hot{cursor:pointer;transition:.2s}
+.hot:hover{opacity:.82}
+.dgcap{margin-top:14px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:13px 16px;font-size:13.5px;min-height:20px;color:var(--tx2);transition:.2s}
+.dgcap b{color:var(--acc2)}
+
+.footer{text-align:center;color:var(--tx3);font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid var(--line)}
+.reset{color:var(--tx3);cursor:pointer;text-decoration:underline}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<nav id="sidebar">
+  <div class="brand">
+    <h1>📊 Marketing Klausur</h1>
+    <div class="sub">Interaktives Lerntool · FAU</div>
+    <div class="gprog">
+      <div class="bar"><div class="fill" id="gfill"></div></div>
+      <div class="lbl"><span id="gtxt">0 % gelernt</span><span id="gcnt">0 / 0</span></div>
+    </div>
+  </div>
+  <div id="navlist"></div>
+  <div class="navsec">Üben</div>
+  <div class="navitem" data-tool="calc"><span class="ic">🧮</span> Rechen-Trainer</div>
+  <div class="navitem" data-tool="mc"><span class="ic">✅</span> MC-Selbsttest</div>
+  <div class="navitem" data-tool="flash"><span class="ic">🃏</span> Karteikarten</div>
+  <div class="navitem" data-tool="diagram"><span class="ic">📈</span> Diagramme üben</div>
+  <div style="padding:18px 22px 0"><span class="reset" id="resetBtn">Fortschritt zurücksetzen</span></div>
+</nav>
+
+<main id="main"><div class="wrap" id="content"></div></main>
+
+<script>
+/* ============================ DATENMODELL ============================ */
+const MODULES = [
+ {id:"grundlagen",ic:"🧭",title:"Grundlagen",weight:"mittel",
+  desc:"Was ist Marketing, Märkte als Bezugs-/Zielobjekte und der Marketingmix (4 P's).",
+  concepts:[
+   {id:"markt",t:"Markt & Marktabgrenzung",w:"niedrig",body:`
+     <div class="def"><b>Markt</b> = Virtueller oder realer Ort des Zusammentreffens eines Angebots an Produkten mit der Nachfrage nach diesen Produkten.</div>
+     <div class="grid2"><div class="mini"><h5>Bezugsobjekte</h5><p>Märkte = Rahmenbedingungen. Kunden, Wettbewerber & Akteure prägen den Handlungsspielraum.</p></div>
+     <div class="mini"><h5>Zielobjekte</h5><p>Unternehmen wollen Märkte gestalten/beeinflussen — Verhalten von Kunden & Wettbewerbern zum eigenen Vorteil steuern.</p></div></div>
+     <p><b>Akteure:</b> Nachfrager (private + organisationale), Anbieter, Vertriebspartner, Interessenvertretung, staatliche Einrichtungen.</p>
+     <div class="tip"><b>Merksatz:</b> Marktabgrenzung nach <u>Bedürfnis</u>, nicht nach Produkt (sonst zu eng). Revlon: „Wir verkaufen Hoffnung & Schönheit" statt „Wir stellen Kosmetika her".</div>`},
+   {id:"mktdef",t:"Definition des Marketing",w:"mittel",body:`
+     <p>Drei Sichtweisen, die in der <b>integrativen Definition</b> zusammenlaufen:</p>
+     <div class="grid2"><div class="mini"><h5>Aktivitätsorientiert</h5><p>Bündel marktgerichteter Aktivitäten → Betonung des Marketingmix.</p></div>
+     <div class="mini"><h5>Beziehungsorientiert</h5><p>Aufbau, Erhalt & Stärkung von Kundenbeziehungen.</p></div></div>
+     <div class="mini"><h5>Führungsorientiert</h5><p>Führung des gesamten Unternehmens nach der Leitidee der Marktorientierung.</p></div>
+     <div class="def"><b>Integrative Definition:</b> externe Facette (marktbezogene Aktivitäten + Informationsgewinnung + Marketingmix) + interne Facette (Voraussetzungen im Unternehmen schaffen, Marktorientierung als Leitidee) + optimale Gestaltung von Kundenbeziehungen.</div>`},
+   {id:"4p",t:"Die vier P's des Marketingmix",w:"hoch",body:`
+     <div class="exam"><b>Klausur:</b> Der Marketingmix ist das Grundgerüst. MC-Frage SS23: „Marketingmix = Bezeichnung, die die unterschiedlichen Elemente des Marketings zusammenfasst."</div>
+     <table class="dt"><tr><th>P</th><th>Politik</th><th>Kernfrage</th></tr>
+     <tr><td>Product</td><td>Produktpolitik</td><td>Innovation, etablierte Produkte, Marke</td></tr>
+     <tr><td>Price</td><td>Preispolitik</td><td>Preisdifferenzierung, Zahlungsbereitschaften</td></tr>
+     <tr><td>Promotion</td><td>Kommunikationspolitik</td><td>Instrumente & Budget</td></tr>
+     <tr><td>Place</td><td>Vertriebspolitik</td><td>Vertriebssystem & Partner</td></tr></table>`}
+  ],
+  flash:[
+   {q:"Markt",a:"Virtueller oder realer Ort des Zusammentreffens eines Angebots an Produkten mit der Nachfrage nach diesen Produkten."},
+   {q:"Die 4 P's",a:"Product (Produktpolitik), Price (Preispolitik), Promotion (Kommunikationspolitik), Place (Vertriebspolitik)."},
+   {q:"Integrative Marketingdefinition",a:"Vereint aktivitäts-, beziehungs- und führungsorientierte Sicht: externe + interne Facette + optimale Gestaltung von Kundenbeziehungen."}
+  ]},
+
+ {id:"konsum",ic:"🧠",title:"Konsumentenverhalten",weight:"hoch",
+  desc:"Aktivierende & kognitive Konstrukte, Informationsverarbeitung, ELM und Kaufentscheidungstypen.",
+  concepts:[
+   {id:"konstrukte",t:"Zentrale Konstrukte (Aktivierung, Emotion, Motivation, Involvement)",w:"hoch",body:`
+     <div class="exam"><b>Klausur:</b> MC-Dauerbrenner. Achtung Fallen: „Maslow = Motivationstheorie" (NICHT Emotion). „Motivation unterscheidet sich von Emotion durch zusätzliche Zielorientierung" = richtig.</div>
+     <div class="def"><b>Aktivierung</b> = Erregungszustand, der den Konsumenten zu Handlungen stimuliert (Leistungsfähigkeit & -bereitschaft). Auslöser: innere Reize (Stoffwechsel, Vorstellungsbilder) & äußere Reize (Sehen, Hören, Riechen).</div>
+     <div class="def"><b>Emotion</b> = augenblicklicher/anhaltender Gefühlszustand, meist mit körperlicher Erregung verbunden.</div>
+     <div class="def"><b>Motivation</b> = aktivierende Ausrichtung auf einen als positiv/negativ bewerteten Zielzustand. Auf Bedürfnisbefriedigung ausgerichtet (Maslow!).</div>
+     <div class="def"><b>Involvement</b> = zielgerichtete Form der Aktivierung zur Suche, Aufnahme, Verarbeitung & Speicherung von Informationen.</div>
+     <div class="tip"><b>Faustregel:</b> Emotion = Zustand · Motivation = Emotion + Zielrichtung · Involvement = Aktivierung + Informationsziel.</div>`},
+   {id:"einstellung",t:"Einstellung, Zufriedenheit, Werte & Lebensstil",w:"mittel",body:`
+     <div class="def"><b>Einstellung</b> = relativ zeitbeständige innere Denkhaltung gegenüber Person/Idee/Sache, verbunden mit Wertung/Erwartung.</div>
+     <div class="def"><b>Kundenzufriedenheit</b> = spezielle Form der Einstellung bzgl. Zufriedenheit mit Transaktion/Beziehung zum Anbieter.</div>
+     <div class="exam"><b>Klausur (C/D-Paradigma):</b> Positive Diskonfirmation (Ist > Soll) → <b>hohe Kundenzufriedenheit</b>.</div>
+     <div class="grid2"><div class="mini"><h5>Werte</h5><p>Dauerhafte Überzeugung, dass ein Verhalten wünschenswert/gut ist. Gesellschaftlich vs. persönlich.</p></div>
+     <div class="mini"><h5>Lebensstil</h5><p>Nach außen wahrnehmbare Verhaltensmuster, geprägt durch Werte → Basis für Kundensegmente.</p></div></div>`},
+   {id:"infoverarb",t:"Informationsverarbeitung (5 Phasen)",w:"hoch",body:`
+     <p>Suche → Aufnahme → Beurteilung → Speicherung → Abruf.</p>
+     <div class="mini"><h5>1. Informationssuche</h5><p>Ausmaß hängt ab von: Fähigkeit (+), erwartetem Nutzen (+), erwartetem Aufwand (−), Erfahrung (umgekehrt U-förmig), Involvement (+).</p>
+     <p><b>Gütereigenschaften:</b> Suche- (vor Kauf prüfbar), Erfahrungs- (durch Gebrauch), Vertrauenseigenschaften (kaum/nur teuer prüfbar).</p></div>
+     <div class="mini"><h5>2. Informationsaufnahme</h5><p>Braucht <b>Exposure</b> + <b>Aufmerksamkeit</b>. Konsonanz-Streben: Dissonanz erzeugt Reduktionsdruck. Konsonante Infos werden besser aufgenommen als dissonante.</p></div>
+     <div class="mini"><h5>3. Beurteilung → ELM</h5><p>Wahl des Verarbeitungswegs hängt von der Elaborationswahrscheinlichkeit ab (siehe Diagramme).</p></div>
+     <div class="mini"><h5>4./5. Speicherung & Abruf</h5><p>Lernen (Langzeitgedächtnis). Abruf implizit (unbewusst) vs. explizit (bewusst).</p></div>`},
+   {id:"elm",t:"Elaboration Likelihood Modell (ELM)",w:"hoch",body:`
+     <div class="exam"><b>Klausur-Klassiker (offene Frage, ~3,5 P):</b> Elaboration definieren + Modell skizzieren. Kam in SS23 & Probeklausur SS25 vor! → siehe interaktives Diagramm.</div>
+     <div class="def"><b>Elaboration</b> = Umfang, zu dem eine Person die relevanten Informationen sorgfältig kognitiv verarbeitet.</div>
+     <p><b>Zwei Wege:</b></p>
+     <ul><li><b>Zentrale Route</b> (hohe Elaboration): sorgfältige Prüfung der Argumente → stabile Einstellung.</li>
+     <li><b>Periphere Route</b> (niedrige Elaboration): Orientierung an Randreizen (Attraktivität, Musik) → labile Einstellung.</li></ul>`},
+   {id:"kaufentsch",t:"Kaufentscheidungstypen (Involvement-Grad)",w:"hoch",body:`
+     <div class="exam"><b>Klausur:</b> Warum High-/Low-Involvement wichtig? → <b>Mit dem Grad des Involvements unterscheidet sich der Informationsbedarf.</b> (nur diese Antwort richtig!)</div>
+     <p>Typ der Kaufentscheidung bestimmt das Ausmaß der Informationsverarbeitung. Vier Typen nach kognitivem & emotionalem Involvement:</p>
+     <table class="dt"><tr><th></th><th>hohes kogn. Inv.</th><th>geringes kogn. Inv.</th></tr>
+     <tr><td>hohes emot. Inv.</td><td>Extensiv</td><td>Impulsiv</td></tr>
+     <tr><td>geringes emot. Inv.</td><td>Limitiert</td><td>Habitualisiert</td></tr></table>
+     <p>Informationssuche & -beurteilung bei <b>extensiven</b> Entscheidungen am umfangreichsten.</p>`}
+  ],
+  flash:[
+   {q:"Aktivierung",a:"Erregungszustand, der den Konsumenten zu Handlungen stimuliert und ihn in Leistungsfähigkeit/-bereitschaft versetzt."},
+   {q:"Emotion",a:"Augenblicklicher/anhaltender Gefühlszustand, meist mit körperlicher Erregung verbunden."},
+   {q:"Motivation",a:"Aktivierende Ausrichtung auf einen als positiv/negativ bewerteten Zielzustand (Bedürfnisbefriedigung; Maslow)."},
+   {q:"Involvement",a:"Zielgerichtete Form der Aktivierung zur Suche, Aufnahme, Verarbeitung & Speicherung von Informationen."},
+   {q:"Einstellung",a:"Relativ zeitbeständige innere Denkhaltung ggü. Person/Idee/Sache, verbunden mit Wertung/Erwartung."},
+   {q:"Kundenzufriedenheit",a:"Spezielle Form der Einstellung bzgl. Zufriedenheit mit der Transaktion/Beziehung zum Anbieter."},
+   {q:"Elaboration",a:"Umfang, zu dem eine Person die relevanten Informationen sorgfältig kognitiv verarbeitet."},
+   {q:"Sucheigenschaften",a:"Qualität schon vor dem Kauf durch Inspektion prüfbar (z. B. Preis, Farbe, Form)."},
+   {q:"Vertrauenseigenschaften",a:"Qualität gar nicht oder nur zu prohibitiv hohen Kosten prüfbar (z. B. Öko-Herkunft)."}
+  ]},
+
+ {id:"orga",ic:"🏢",title:"Organisationales Kaufverhalten",weight:"hoch",
+  desc:"B2B-Besonderheiten, Buying Center & seine Rollen, Struktur- und Interaktionsmodelle.",
+  concepts:[
+   {id:"charakt",t:"Charakteristika des B2B-Kaufverhaltens",w:"mittel",body:`
+     <ul><li>Hoher Formalisierungsgrad</li><li>Hoher Individualisierungsgrad</li><li>Besondere Bedeutung der Dienstleistungen</li>
+     <li>Multiorganisationalität</li><li>Langfristigkeit der Geschäftsbeziehung</li><li>Hoher Grad der Interaktion</li>
+     <li>Abgeleiteter Charakter der Nachfrage (derivativ)</li><li>Multipersonalität</li></ul>
+     <div class="tip"><b>Merken:</b> 8 Phasen im organisationalen Kaufprozess (statt 4 bei Endverbrauchern) → komplizierter.</div>`},
+   {id:"buyingcenter",t:"Buying Center & Rollen",w:"hoch",body:`
+     <div class="exam"><b>Klausur-Klassiker (offene Frage, ~2,5–3 P):</b> Buying Center definieren + 3 Rollen nennen. Kam in SS23 UND SS25 vor!</div>
+     <div class="def"><b>Buying Center</b> = gedanklicher Zusammenschluss der an einer bestimmten organisationalen Kaufentscheidung beteiligten Personen bzw. Gruppen.</div>
+     <p><b>Die 6 Rollen:</b></p>
+     <div class="grid2"><div class="mini"><h5>Initiator</h5><p>stößt den Kauf an</p></div><div class="mini"><h5>Benutzer (User)</h5><p>arbeitet mit dem Produkt</p></div>
+     <div class="mini"><h5>Beeinflusser (Influencer)</h5><p>gibt fachlichen Input</p></div><div class="mini"><h5>Einkäufer (Buyer)</h5><p>wickelt Beschaffung ab</p></div>
+     <div class="mini"><h5>Entscheider (Decider)</h5><p>trifft die Entscheidung</p></div><div class="mini"><h5>Gatekeeper</h5><p>steuert den Informationsfluss</p></div></div>`},
+   {id:"modelle",t:"Erklärungsansätze (Webster & Wind, IMP)",w:"niedrig",body:`
+     <div class="grid2"><div class="mini"><h5>Strukturmodell Webster & Wind</h5><p>erklärt Kaufverhalten über Umwelt-, Organisations-, Buying-Center- & individuelle Faktoren.</p></div>
+     <div class="mini"><h5>Interaktionsmodell IMP-Group</h5><p>fokussiert die Interaktion zwischen Anbieter & Nachfrager (Atmosphäre, Umfeld).</p></div></div>
+     <div class="mini"><h5>Geschäftsbeziehungsansatz</h5><p>Motive: Reduktion von Unsicherheiten/Risiken + Wertschöpfung (Kostenreduktion, Innovation, Qualität) durch engere Zusammenarbeit.</p></div>`}
+  ],
+  flash:[
+   {q:"Buying Center",a:"Gedanklicher Zusammenschluss der an einer bestimmten organisationalen Kaufentscheidung beteiligten Personen bzw. Gruppen."},
+   {q:"6 Rollen im Buying Center",a:"Initiator, Benutzer (User), Beeinflusser (Influencer), Einkäufer (Buyer), Entscheider (Decider), Gatekeeper."},
+   {q:"Abgeleitete Nachfrage (B2B)",a:"Nachfrage nach Einzelteilen steigt/fällt mit der Endproduktnachfrage (derivativ)."}
+  ]},
+
+ {id:"strat",ic:"♟️",title:"Strategisches Marketing",weight:"hoch",
+  desc:"Ziele, Erfahrungskurve & Lebenszyklus, Situationsanalyse, Segmentierung, Ansoff, Portfolio.",
+  concepts:[
+   {id:"ziele",t:"Marketingziele & Strategieprozess",w:"hoch",body:`
+     <div class="exam"><b>Klausur (offene Frage, 4 P):</b> „Prozess der Strategieentwicklung schrittweise anhand eines Beispiels erläutern." → 5 Schritte, siehe Diagramm.</div>
+     <p><b>3 Arten von Marketingzielen:</b></p>
+     <div class="grid2"><div class="mini"><h5>Potenzialbezogen</h5><p>Bekanntheitsgrad, Image, Kundenzufriedenheit</p></div>
+     <div class="mini"><h5>Markterfolgsbezogen</h5><p>Marktanteil, Kundenloyalität, Preisniveau</p></div></div>
+     <div class="mini"><h5>Wirtschaftlich</h5><p>Umsatz, Marketingkosten, Deckungsbeitrag</p></div>
+     <p><b>5 Schritte:</b> 1) Analyse der Ausgangssituation 2) Formulierung von Alternativen 3) Bewertung 4) Auswahl 5) Umsetzung & Kontrolle.</p>`},
+   {id:"erfahrung",t:"Erfahrungskurvengesetz",w:"hoch",body:`
+     <div class="exam"><b>Klausur (Rechnen, 3 P + MC):</b> Lernrate & Stückkosten berechnen. → Rechen-Trainer. MC: „Verdopplung → 20–30 % Stückkostensenkung" & „Erfahrung = kumulierte Menge, senkt Kosten" richtig.</div>
+     <div class="def"><b>Erfahrungskurvengesetz:</b> Mit jeder Verdopplung der kumulierten Menge besteht ein Stückkostensenkungspotenzial von <b>20–30 %</b>, bezogen auf alle wertschöpfungsbezogenen (inflationsbereinigten) Stückkosten.</div>
+     <div class="formula">k(x) = a · x<sup>−b</sup> &nbsp;&nbsp;|&nbsp;&nbsp; Lernrate = 1 − 2<sup>−b</sup></div>
+     <p><b>Gründe:</b> Lerneffekte (Erfahrung ~ kumulierte Menge) + kostensenkende/produktionssteigernde Maßnahmen.</p>`},
+   {id:"lebenszyklus",t:"Lebenszyklusmodell",w:"mittel",body:`
+     <div class="def"><b>Lebenszyklusmodell:</b> Jedes Produkt durchläuft am Markt Phasen (Einführung, Wachstum, Reife, Sättigung, Degeneration) mit unterschiedlichen Absatz- & Gewinnpotenzialen.</div>
+     <div class="exam"><b>Klausur MC (SS23):</b> Richtig sind: beschreibt Phasen im Zeitverlauf + unterstützt Planung/Steuerung. FALSCH: exakte Vorhersage von Zeitpunkt/Absatz.</div>`},
+   {id:"analyse",t:"Analyse der Ausgangssituation & Segmentierung",w:"hoch",body:`
+     <p><b>3 Informationsbereiche:</b> globale Umwelt (Makro: PoRGGT), Marktgegebenheiten (Mikro), Situation des eigenen Unternehmens.</p>
+     <p><b>Methoden:</b> Szenario-Technik/Frühwarnsysteme (Umwelt) · Marktforschung/strategische Gruppen (Markt) · Wertschöpfungskette, Benchmarking, SWOT (Unternehmen).</p>
+     <div class="def"><b>Marktsegmentierung</b> = Aufteilung eines heterogenen Gesamtmarktes in homogene Teilmärkte mittels Käufermerkmalen.</div>
+     <p><b>Kriterien:</b> demographisch · sozioökonomisch · Persönlichkeit/Lebensstil · Nutzen · Kaufverhalten.</p>`},
+   {id:"stratgruppen",t:"Strategische Gruppen",w:"hoch",body:`
+     <div class="exam"><b>Klausur-Falle (MC):</b> „Fokus liegt auf dem Kunden" ist FALSCH — der Fokus liegt auf den <b>Wettbewerbern</b>. Klassifikation strat. Gruppen = Form der Marktanalyse.</div>
+     <div class="def"><b>Strategische Gruppe</b> = Gruppe von Unternehmen mit ähnlicher Wettbewerbsstrategie / ähnlichen Charakteristika / Kompetenzen.</div>
+     <p><b>Mobilitätsbarrieren</b> erschweren den kurzfristigen Wechsel in eine andere Gruppe. Bsp.: Billig-Airlines (Ryanair, easyJet).</p>`},
+   {id:"ansoff",t:"Marktfeldstrategien (Ansoff) & Wettbewerbsstrategien",w:"hoch",body:`
+     <div class="exam"><b>Klausur:</b> Ansoff-Matrix skizzieren/zuordnen können. → interaktives Diagramm.</div>
+     <table class="dt"><tr><th></th><th>bestehende Produkte</th><th>neue Produkte</th></tr>
+     <tr><td>bestehende Märkte</td><td>Marktdurchdringung</td><td>Produktentwicklung</td></tr>
+     <tr><td>neue Märkte</td><td>Marktentwicklung</td><td>Diversifikation</td></tr></table>
+     <p><b>Wettbewerbsstrategien (Porter):</b> Kostenführerschaft · Differenzierung · Fokus/Nische.</p>`},
+   {id:"portfolio",t:"BCG-Portfolio & Bewertungskriterien",w:"mittel",body:`
+     <p><b>Marktwachstums-/Marktanteils-Portfolio (BCG):</b> Question Marks, Stars, Cash Cows, Poor Dogs.</p>
+     <p><b>Bewertung von Strategien:</b> Konsistenz- · Informations- · inhaltliche · Realisierbarkeitskriterien.</p>
+     <div class="mini"><h5>Formal vs. qualitativ</h5><p>Formale Ansätze = quantitative Struktur (Portfolios). Qualitative = kreative Suche nach Schlüsselideen.</p></div>`}
+  ],
+  flash:[
+   {q:"Erfahrungskurvengesetz",a:"Mit jeder Verdopplung der kumulierten Menge Stückkostensenkungspotenzial von 20–30 % (alle wertschöpfungsbezogenen Stückkosten)."},
+   {q:"Lernrate (Formel)",a:"Lernrate = 1 − 2^(−b); Kostenfunktion k(x) = a · x^(−b)."},
+   {q:"Marktsegmentierung",a:"Aufteilung eines heterogenen Gesamtmarktes in homogene Teilmärkte mittels Merkmalen der Käufer."},
+   {q:"Strategische Gruppe",a:"Gruppe von Unternehmen mit ähnlicher Wettbewerbsstrategie / ähnlichen Charakteristika / Kompetenzen; Fokus auf Wettbewerber."},
+   {q:"Ansoff-Matrix",a:"Marktdurchdringung, Marktentwicklung, Produktentwicklung, Diversifikation (Markt × Produkt, alt/neu)."},
+   {q:"3 Arten von Marketingzielen",a:"Potenzialbezogen, markterfolgsbezogen, wirtschaftlich."}
+  ]},
+
+ {id:"digital",ic:"💻",title:"Digital Marketing",weight:"mittel",
+  desc:"Digitale Plattformen, generative KI, Datenarten, unstrukturierte Daten & Individualisierung.",
+  concepts:[
+   {id:"plattform",t:"Digitale Plattformen",w:"hoch",body:`
+     <div class="exam"><b>Klausur (offene Frage SS25, 3 P):</b> Vier Arten digitaler Plattformen anhand zweier Dimensionen einordnen + Achsen beschriften. → Diagramm.</div>
+     <div class="def"><b>Digitale Plattform</b> = digitaler Service, der Austausch & Interaktion zwischen zwei oder mehr abhängigen Nutzergruppen erleichtert.</div>
+     <p><b>Charakteristika:</b> Erleichterung der Interaktion (Uber) · zwei Gruppen profitieren (BlaBlaCar) · Identifikation von Marktlücken (eBay) · niedrige Transaktionskosten (Amazon).</p>`},
+   {id:"ki",t:"Generative KI",w:"mittel",body:`
+     <div class="def"><b>Generative KI</b> = Algorithmen, die aus Trainingsdaten (scheinbar) neue, aussagekräftige Inhalte (Text, Code, Bild, Audio, Video) erzeugen.</div>
+     <p>Bsp.: Zalando Fashion Assistant (Text), MANGO KI-Bilder, BMW virtuelle Influencerin (Video), PENNY Hörfunk (Audio).</p>`},
+   {id:"daten",t:"Daten & unstrukturierte Daten",w:"hoch",body:`
+     <div class="exam"><b>Klausur-Dauerbrenner (MC):</b> Unstrukturierte Daten = Videos & nonverbale Daten (nicht Umfragedaten, nicht numerische Sekundärdaten).</div>
+     <p><b>Datenarten:</b> Datenbank-Systeme (historisch) · Web-basiert (online) · Mobile/Sensor-basiert (Echtzeit).</p>
+     <div class="def"><b>Unstrukturierte Daten</b> = Informationen ohne vordefinierte Organisation/numerische Werte (≈ 80 % aller Daten).</div>
+     <p><b>3 Merkmale:</b> nichtnumerisch · facettenreich · gleichzeitig.</p>`},
+   {id:"individual",t:"Individualisierung (Best Practice)",w:"niedrig",body:`
+     <div class="grid2"><div class="mini"><h5>Empfehlungen (Netflix)</h5><p>Wertschöpfung durch Relevanz; erleichtert Entscheidungen.</p></div>
+     <div class="mini"><h5>Verkaufsförderung (adidas)</h5><p>+Kundenbindung; −Fairness, Privatsphäre, Spillover.</p></div></div>
+     <div class="mini"><h5>Kommunikation (Hugendubel)</h5><p>Name in Betreff → +20 % Öffnungsrate, +31 % Anfragen, −17 % Abmeldungen.</p></div>`}
+  ],
+  flash:[
+   {q:"Digitale Plattform",a:"Digitaler Service, der Austausch & Interaktion zwischen zwei oder mehr voneinander abhängigen Nutzergruppen erleichtert."},
+   {q:"Generative KI",a:"Algorithmen, die aus Trainingsdaten scheinbar neue, aussagekräftige Inhalte (Text, Code, Bild, Audio, Video) erzeugen."},
+   {q:"Unstrukturierte Daten",a:"Informationen ohne vordefinierte Organisation/numerische Werte. Merkmale: nichtnumerisch, facettenreich, gleichzeitig (z. B. Videos, nonverbale Daten)."}
+  ]},
+
+ {id:"produkt",ic:"📦",title:"Produktpolitik",weight:"hoch",
+  desc:"Produktbegriff, Innovation & Conjoint, Diffusion (Rogers), Pionierstrategie, Programm & Marke.",
+  concepts:[
+   {id:"begriff",t:"Produktbegriff & Ziele",w:"mittel",body:`
+     <p><b>Drei Produktbegriffe (am SUV):</b> substanziell (Kern) · erweitert (+ immaterielle Leistung) · generisch (alle Facetten).</p>
+     <div class="def"><b>Produkt</b> = Bündel von Eigenschaften, das auf die Schaffung von Kundennutzen (jedweder Art) abzielt.</div>
+     <div class="exam"><b>Klausur MC:</b> Produktpolitik hat NICHT nur ökonomische Ziele. Wachstums-, Gewinn-, Rationalisierungsziele = ökonomische Beispiele (richtig).</div>
+     <p><b>Ziele:</b> ökonomisch (Gewinn, Wachstum, Rationalisierung, Kapazität, Sicherheit, Marktstellung) · ökologisch/sozial · psychographisch.</p>`},
+   {id:"innovation",t:"Innovationsprozess & Conjoint",w:"hoch",body:`
+     <div class="exam"><b>Klausur (Rechnen, ~4 P):</b> Conjoint — relative Wichtigkeit & Gesamtnutzen berechnen (SS23). → Rechen-Trainer.</div>
+     <div class="def"><b>Produktinnovation</b> = jedes Produkt/jede Idee, das/die vom Kunden als neu wahrgenommen wird.</div>
+     <p><b>4 Phasen:</b> Ideengewinnung/-konkretisierung → Konzeptdefinition → Konzeptbewertung/-selektion → Markteinführung. <b>Lead-User-Ansatz:</b> Einbezug fortschrittlicher Kunden.</p>
+     <div class="mini"><h5>Conjoint-Analyse</h5><p>Gesamtbeurteilung → Rückschluss auf Teilnutzen einzelner Merkmalsausprägungen. Ziel: Wichtigkeit & Zahlungsbereitschaft quantifizieren.</p>
+     <p><b>Rechnung:</b> rel. Wichtigkeit = Spanne des Merkmals / Summe aller Spannen · 100. Gesamtnutzen = Σ Teilnutzenwerte.</p></div>`},
+   {id:"diffusion",t:"Diffusion (Rogers) & Pionierstrategie",w:"hoch",body:`
+     <div class="exam"><b>Klausur:</b> Rogers-Adopterkategorien (MC SS23) + Pionier-Vor/Nachteile (MC SS25). → Diagramm.</div>
+     <div class="def"><b>Diffusion</b> = Ausbreitung von Innovationen im Markt im Zeitablauf.</div>
+     <p><b>5 Adopterkategorien:</b> Innovatoren (2,5 %) · frühe Adopter (13,5 %) · frühe Mehrheit (34 %) · späte Mehrheit (34 %) · Nachzügler (16 %).</p>
+     <div class="grid2"><div class="mini"><h5>Pioniervorteile</h5><p>Monopol + hohe Preise, Erfahrungskurve, Präferenz/Loyalität, Wechselbarrieren, Distributionskanäle.</p></div>
+     <div class="mini"><h5>Pioniernachteile</h5><p>hoher Ressourceneinsatz, Nachfrage-Unsicherheit, fehlende Erfahrung mit Funktionalität.</p></div></div>`},
+   {id:"programm",t:"Produktprogramm: Variation, Differenzierung, Diversifikation",w:"mittel",body:`
+     <p><b>Strukturmerkmale:</b> Breite · Tiefe · Konsistenz. (Amazon = breit & tief; Spezialgeschäft = schmal & tief.)</p>
+     <div class="grid2"><div class="mini"><h5>Produktvariation</h5><p>Modifikation eines existierenden Produkts, Kernfunktion bleibt (Facelift/Relaunch).</p></div>
+     <div class="mini"><h5>Produktdifferenzierung</h5><p>Ergänzung um neue Variante — vertikal (Qualität/Preis) oder horizontal (Funktionen).</p></div></div>
+     <div class="mini"><h5>Diversifikation</h5><p>Aufnahme neuer Produkte ohne direkten Zusammenhang zum bisherigen Programm (horizontal/vertikal/lateral).</p></div>`},
+   {id:"marke",t:"Markenmanagement",w:"mittel",body:`
+     <div class="def"><b>Marke</b> (wirkungsbezogen) = im Bewusstsein des Kunden verankerte Vorstellung, die das Angebot von Wettbewerbsangeboten differenziert.</div>
+     <p><b>Funktionen:</b> Markenführer (Präferenz, Differenzierung) · Handel (Imagetransfer, Risikominderung) · Verbraucher (Qualitätssignal, Orientierung).</p>
+     <p><b>Markenstrategien:</b> Einzelmarke · Dachmarke · Familienmarke.</p>`}
+  ],
+  flash:[
+   {q:"Produkt (Definition)",a:"Bündel von Eigenschaften, das auf die Schaffung von Kundennutzen (jedweder Art) abzielt."},
+   {q:"Produktinnovation",a:"Jedes Produkt/jede Idee, das/die von den Kunden als neu wahrgenommen wird."},
+   {q:"Conjoint – relative Wichtigkeit",a:"Spanne der Teilnutzen eines Merkmals / Summe aller Spannen · 100."},
+   {q:"Diffusion",a:"Ausbreitung von Innovationen im Markt im Zeitablauf."},
+   {q:"5 Adopterkategorien (Rogers)",a:"Innovatoren, frühe Adopter, frühe Mehrheit, späte Mehrheit, Nachzügler."},
+   {q:"Produktvariation vs. -differenzierung",a:"Variation = existierendes Produkt ändern (Kern bleibt). Differenzierung = neue Variante ergänzen."},
+   {q:"Marke",a:"Im Bewusstsein des Kunden verankerte Vorstellung, die das Angebot von Wettbewerbsangeboten differenziert."},
+   {q:"Pioniervorteil (Beispiel)",a:"Vorübergehende Monopolsituation mit hohen Preisen, Erfahrungskurveneffekte, Wechselbarrieren."}
+  ]},
+
+ {id:"preis",ic:"💶",title:"Preispolitik",weight:"hoch",
+  desc:"PAF & Preiselastizität, Umsatz-/Gewinnmaximum, verhaltenswiss. Preisforschung, Preisdifferenzierung.",
+  concepts:[
+   {id:"grundlagen",t:"Preisstrategien & Entscheidungsfelder",w:"mittel",body:`
+     <div class="def"><b>Preis</b> = Zahl der Geldeinheiten, die ein Käufer für eine Mengeneinheit entrichten muss.</div>
+     <div class="grid2"><div class="mini"><h5>Skimming</h5><p>Einführung zu hohen Preisen → Abschöpfung, schnelle Amortisation.</p></div>
+     <div class="mini"><h5>Penetration</h5><p>niedriger Preis → rasche Diffusion, hoher Marktanteil.</p></div></div>
+     <div class="mini"><h5>Dynamic Pricing</h5><p>Algorithmus passt Preise automatisiert & gewinnmaximierend in Echtzeit an (hohe Volatilität, hohe Intransparenz).</p></div>`},
+   {id:"paf",t:"Preis-Absatz-Funktion & Preiselastizität",w:"hoch",body:`
+     <div class="exam"><b>Klausur (Rechnen, mehrere Aufgaben!):</b> PAF aufstellen, Elastizität, Umsatz-/Gewinnmaximum. Der wichtigste Rechenblock! → Rechen-Trainer.</div>
+     <div class="formula">x(p) = a − b·p &nbsp;&nbsp; ε = (dx/dp)·(p/x) = −b · p/(a−b·p)</div>
+     <p><b>Kennwerte der linearen PAF:</b> Sättigungsmenge = a · Maximalpreis = a/b · Absatzänderung je +1 € Preis = −b.</p>
+     <div class="tip"><b>Wichtig (MC):</b> Bei linearer PAF nimmt die Preiselastizität betragsmäßig <u>mit steigendem Preis zu</u>. Aggregierte PAF entstehen aus mehreren individuellen PAF.</div>`},
+   {id:"maxima",t:"Umsatz- & Gewinnmaximum",w:"hoch",body:`
+     <div class="formula">U(p) = p·x(p) → U'(p)=0 &nbsp;&nbsp;|&nbsp;&nbsp; G(p) = p·x(p) − K(x) → G'(p)=0</div>
+     <p><b>Vorgehen Gewinnmax:</b> 1) G = U − K aufstellen (K einsetzen) 2) nach p ableiten 3) = 0 setzen 4) p lösen.</p>
+     <div class="tip"><b>Beispiel (Franken Limo, SS25):</b> x=260.000−200.000p, K=520.000+0,25x → G'=−400.000p+310.000=0 → <b>p = 0,78 €</b>.</div>`},
+   {id:"verhalten",t:"Verhaltenswissenschaftliche Preisforschung",w:"hoch",body:`
+     <div class="exam"><b>Klausur MC:</b> Relative Preisschwellen = Bewertung innerhalb des akzeptierten Bereichs. Interner Referenzpreis wird durch berichtete Preise beeinflusst.</div>
+     <div class="def"><b>Preisschwellen</b> = Preise, bei denen sich die Beurteilung sprunghaft ändert. Absolut (Ober-/Untergrenze) vs. relativ (innerhalb des Bereichs).</div>
+     <div class="def"><b>Referenzpreis</b> = Vergleichsmaßstab bei der Beurteilung anderer Preise (intern gespeichert vs. extern).</div>
+     <p><b>Preisdarstellung:</b> Ersparnis wirkt größer bei vertikaler Anordnung, kleinen rechten Ziffern (<5), multiplen Rabatten; teure Produkte absolut (€), günstige relativ (%).</p>`},
+   {id:"diff",t:"Preisdifferenzierung & digitale Modelle",w:"hoch",body:`
+     <div class="exam"><b>Klausur-Falle (MC):</b> „Konkurrenzbezogene Preisdifferenzierung" ist KEINE Implementationsform. Formen: leistungsbezogen, mengenmäßig, Preisbündelung, personenbezogen, zeitlich, räumlich.</div>
+     <div class="def"><b>Preisdifferenzierung</b> = identische/geringfügig unterschiedliche Produkte werden verschiedenen Segmenten zu unterschiedlichen Preisen angeboten. Ziel: Abschöpfung unterschiedlicher Zahlungsbereitschaften.</div>
+     <p><b>Digitale Preismodelle:</b> Freemium · Subscription (planbare Einnahmen, Up-/Cross-Selling) · Pay-per-Use (hohe Fairness, Flexibilität).</p>`}
+  ],
+  flash:[
+   {q:"Preiselastizität (Formel)",a:"ε = (dx/dp)·(p/x). Bei linearer PAF x=a−bp: ε = −b·p/(a−bp)."},
+   {q:"Kennwerte lineare PAF",a:"Sättigungsmenge = a; Maximalpreis = a/b; Absatzänderung je +1 € = −b."},
+   {q:"Umsatzmaximum",a:"U(p)=p·x(p); U'(p)=0. Bei x=a−bp liegt es bei p = a/(2b)."},
+   {q:"Gewinnmaximum",a:"G=U−K aufstellen, nach p ableiten, =0 setzen. K in G einsetzen!"},
+   {q:"Preisschwellen",a:"Preise, bei denen sich die Beurteilung sprunghaft ändert. Absolut (Ober-/Untergrenze) vs. relativ (innerhalb des Bereichs)."},
+   {q:"Referenzpreis",a:"Preis, den Kunden bei der Beurteilung anderer Preise als Vergleichsmaßstab heranziehen (intern/extern)."},
+   {q:"Preisdifferenzierung",a:"Gleiche/ähnliche Produkte für verschiedene Segmente zu unterschiedlichen Preisen — zur Abschöpfung von Zahlungsbereitschaften."},
+   {q:"Skimming vs. Penetration",a:"Skimming: hoher Einführungspreis (abschöpfen). Penetration: niedriger Preis (rasche Diffusion, Marktanteil)."}
+  ]},
+
+ {id:"komm",ic:"📣",title:"Kommunikationspolitik",weight:"hoch",
+  desc:"Planungsprozess, Mediaplanung, TKP & Reichweiten, Streuplan, SEA/SEO, Instrumente & Gestaltung.",
+  concepts:[
+   {id:"prozess",t:"Planungsprozess",w:"hoch",body:`
+     <div class="exam"><b>Klausur-Falle (MC):</b> Richtige Reihenfolge — nach Ausgestaltung folgt ein <b>Pretest</b>, dann Durchführung, dann Posttest. „Aus dem Bauch planen" ist falsch.</div>
+     <p><b>Schritte:</b> Ziele → Budget → Ausgestaltung der Maßnahmen → <b>Pretest</b> → Durchführung → Posttest (Kontrolle).</p>`},
+   {id:"media",t:"Mediaplanung: TKP, Reichweite & Streuplan",w:"hoch",body:`
+     <div class="exam"><b>Klausur (Rechnen, ~4 P):</b> TKP, Bruttoreichweite & optimaler Streuplan. Kam in SS25 & Übung/Tutorium mehrfach vor! → Rechen-Trainer.</div>
+     <div class="formula">TKP = (Kosten je Ausgabe / Leser) · 1000</div>
+     <div class="grid2"><div class="mini"><h5>Bruttoreichweite</h5><p>Summe aller <b>Kontakte</b> = Σ (Leser · Ausgaben). Mehrfachkontakte zählen mit.</p></div>
+     <div class="mini"><h5>Nettoreichweite</h5><p>Anzahl erreichter <b>Personen</b> (ohne Duplizität) — braucht Daten zu Überschneidungen.</p></div></div>
+     <p><b>Streuplan-Logik:</b> Medium mit dem günstigsten TKP zuerst maximal belegen, dann Restbudget aufs nächstgünstige usw.</p>
+     <p><b>Zeitliche Verteilung:</b> konzentriert · konstant · pulsierend (Lern- vs. Vergessenseffekt).</p>`},
+   {id:"seo",t:"Online-Marketing & SEA/SEO",w:"mittel",body:`
+     <div class="grid2"><div class="mini"><h5>SEA (bezahlt)</h5><p>schnelle Umsetzung, Kosten pro Klick, abhängig vom Trafficvolumen.</p></div>
+     <div class="mini"><h5>SEO (organisch)</h5><p>nachhaltig, hohe Anfangsinvestition, keine Klickkosten, unabhängig vom Trafficvolumen.</p></div></div>
+     <p><b>SEO-Bausteine:</b> Keyword-Recherche · technische & inhaltliche Onpage-Optimierung · Offpage (Linkaufbau).</p>`},
+   {id:"instrumente",t:"Instrumente & Gestaltung",w:"hoch",body:`
+     <div class="exam"><b>Klausur MC (SS25):</b> Gestaltungselemente = inhaltliche, visuelle & auditive. Inhaltlich: psychologische, rhetorische, argumentative Elemente. (SS23: Instrumente = Verkaufsförderung, Radiowerbung, Direktmarketing …)</div>
+     <p><b>Klassische Mediawerbung:</b> TV/Kino, Print, Radio, Außenwerbung. <b>Weitere:</b> Online, Social Media, Mobile, Direktmarketing, Verkaufsförderung, Messen, Events, Sponsoring, Product Placement, PR.</p>
+     <p><b>3 Gestaltungselemente:</b> inhaltlich · visuell · auditiv — je mit möglichem Gestaltungsfehler.</p>`}
+  ],
+  flash:[
+   {q:"TKP (Tausenderkontaktpreis)",a:"Kosten, um mit einem Medium 1000 Kontakte zu erreichen: (Kosten je Ausgabe / Leser) · 1000."},
+   {q:"Bruttoreichweite",a:"Summe aller Kontakte einer Kommunikationsmaßnahme = Σ (Leser · Ausgaben); Mehrfachkontakte zählen mit."},
+   {q:"Nettoreichweite",a:"Anzahl der erreichten Personen (ohne Duplizität/Mehrfachkontakte)."},
+   {q:"Streuplan-Logik",a:"Günstigsten TKP zuerst maximal belegen, dann Restbudget aufs nächstgünstige Medium."},
+   {q:"SEA vs. SEO",a:"SEA = bezahlt, pro Klick, trafficabhängig. SEO = organisch, hohe Anfangsinvestition, trafficunabhängig."},
+   {q:"3 Gestaltungselemente der Kommunikation",a:"Inhaltlich, visuell, auditiv (inhaltlich: psychologisch, rhetorisch, argumentativ)."}
+  ]},
+
+ {id:"vertrieb",ic:"🚚",title:"Vertriebspolitik",weight:"mittel",
+  desc:"Vertriebssystem, Tiefe & Breite, direkt/indirekt, Push/Pull, Key-Account-Management.",
+  concepts:[
+   {id:"system",t:"Gestaltung des Vertriebssystems",w:"hoch",body:`
+     <div class="exam"><b>Klausur-Falle (MC SS25):</b> Breite des <u>Vertriebskanals</u> = Anzahl der <b>Vertriebspartner</b> in diesem Kanal (richtig). Breite des Systems = Anzahl der Kanäle.</div>
+     <p><b>Tiefe (Anzahl Stufen):</b> direkter Vertrieb (Vorwerk) vs. indirekter Vertrieb (P&G → DM).</p>
+     <p><b>Breite eines Kanals (Anzahl Partner):</b> intensiv (Cola, überall) · selektiv · exklusiv (Gucci-Store).</p>
+     <p><b>Breite des Systems (Anzahl Kanäle):</b> Einkanal vs. Mehrkanal (NA-KD: Website, Zalando, About You, Amazon …).</p>`},
+   {id:"kanal",t:"Kriterien & Vor-/Nachteile",w:"mittel",body:`
+     <div class="exam"><b>Klausur (offene Frage SS25):</b> zwei Kriterien der Vertriebswegeentscheidung nennen.</div>
+     <p><b>Kriterien:</b> produkt-, unternehmens-, endabnehmer-, konkurrenz-, absatzmittlerbezogene sowie soziale & rechtliche Faktoren.</p>
+     <p><b>Direkt:</b> + unmittelbare Absatzkontrolle; − hoher absatzorganisatorischer Aufwand. <b>Indirekt:</b> + Aufwand abgewälzt; − erschwerte Kommunikation mit Endabnehmer.</p>`},
+   {id:"keyaccount",t:"Vertikales Marketing & Key Accounts",w:"hoch",body:`
+     <div class="exam"><b>Klausur (offene Frage):</b> zwei proaktive Kriterien für Key-Account-Auswahl nennen + begründen (SS25). Push/Pull benennen (SS23).</div>
+     <div class="def"><b>Vertikales Marketing</b> = von Hersteller & Vertriebspartner gemeinsam geplante, endkundengerichtete Aktivitäten (Push + Pull → Nachfragesog).</div>
+     <p><b>Key-Account-Auswahl:</b> proaktive Kriterien (wirtschaftliches Potenzial, Bedeutung, Image, Know-how des Kunden) vs. reaktive Kriterien (interne Probleme, Nachfrage des Kunden).</p>`}
+  ],
+  flash:[
+   {q:"Direkter vs. indirekter Vertrieb",a:"Tiefe des Kanals: direkt = ohne Absatzmittler (Vorwerk); indirekt = über Handel (P&G → DM)."},
+   {q:"Intensiver / selektiver / exklusiver Vertrieb",a:"Breite des Kanals (Anzahl Partner): intensiv (überall), selektiv (ausgewählt), exklusiv (Gucci-Store)."},
+   {q:"Breite Vertriebssystem vs. Kanal",a:"System = Anzahl der Kanäle; Kanal = Anzahl der Vertriebspartner innerhalb dieses Kanals."},
+   {q:"Vertikales Marketing",a:"Von Hersteller & Vertriebspartner gemeinsam geplante endkundengerichtete Aktivitäten (Push + Pull)."},
+   {q:"Proaktive Key-Account-Kriterien",a:"Wirtschaftliches Potenzial, wirtschaftliche Bedeutung, Image, Know-how des Kunden."}
+  ]},
+
+ {id:"mafo",ic:"🔬",title:"Marktforschung",weight:"hoch",
+  desc:"Prozess, Primär-/Sekundärdaten, Datengewinnung, Regressionsanalyse & Bestimmtheitsmaß r².",
+  concepts:[
+   {id:"prozess",t:"Prozess & Datengewinnung",w:"hoch",body:`
+     <div class="exam"><b>Klausur (offene Frage SS25):</b> Methode zu Fragestellung zuordnen + Primär- vs. Sekundärdaten beurteilen. Zufriedenheit messen → Befragung/Primär; Layout-Wirkung → Experiment/A-B-Test/Primär.</div>
+     <p><b>Datengewinnung:</b> Befragung · Beobachtung (Kundenlaufstudie/RFID, Eye-/Mouse-Tracking, Silent Shopping) · Experiment (A/B-Test).</p>
+     <div class="tip"><b>MC-Merker:</b> Marktforschung braucht strukturierte Planungs-/Prozessschritte, kann interne Probleme lösen und soll immer eine fundierte Managementfragestellung beantworten. Datengrundlage = Primär- und/oder Sekundärdaten.</div>`},
+   {id:"regression",t:"Regressionsanalyse",w:"hoch",body:`
+     <div class="exam"><b>Klausur (Rechnen, bis 6 P):</b> lineare Schätzfunktion ermitteln & Wert prognostizieren (SS23). → Rechen-Trainer.</div>
+     <div class="formula">b = [n·Σx·y − Σx·Σy] / [n·Σx² − (Σx)²] &nbsp;&nbsp; a = ȳ − b·x̄</div>
+     <p><b>Idee:</b> einseitige Abhängigkeit x→y, Schätzfunktion y=a+bx, Methode der kleinsten Fehlerquadrate. Variation = erklärte + nicht erklärte Streuung.</p>`},
+   {id:"r2",t:"Bestimmtheitsmaß r²",w:"hoch",body:`
+     <div class="exam"><b>Klausur (MC & offene Frage):</b> r² interpretieren. r²=0,86 → „86 % der Varianz der abhängigen Variable werden durch die unabhängige erklärt." Graph-Güte einschätzen: kein Punkt auf der Geraden & weit entfernt → geringe Güte.</div>
+     <div class="formula">r² = Σ(ŷ−ȳ)² / Σ(y−ȳ)² &nbsp;∈ [0, 1]</div>
+     <p>Anteil der Gesamtstreuung, der durch die unabhängige(n) Variable(n) erklärt wird.</p>`}
+  ],
+  flash:[
+   {q:"Primär- vs. Sekundärdaten",a:"Primär = neu erhoben (Befragung, Experiment). Sekundär = bereits vorhandene Daten."},
+   {q:"Regression – Steigung b",a:"b = [n·Σxy − Σx·Σy] / [n·Σx² − (Σx)²]."},
+   {q:"Regression – Achsenabschnitt a",a:"a = ȳ − b·x̄."},
+   {q:"Bestimmtheitsmaß r²",a:"Σ(ŷ−ȳ)² / Σ(y−ȳ)² ∈ [0,1]. Anteil der erklärten Streuung. r²=0,86 → 86 % der Varianz der abhängigen Variable erklärt."}
+  ]}
+];
+
+/* ============================ MC-FRAGEN (SS25, verifiziert) ============================ */
+const MC = [
+ {t:"Welche Umfeldfaktoren des Konsumentenverhaltens haben Sie in der Vorlesung kennengelernt?",o:["Physisches Umfeld","Soziales Umfeld","Psychisches Umfeld","Kulturelles Umfeld"],c:[0,1,3],e:"Physisches, soziales & kulturelles Umfeld sind Umfeldfaktoren. Ein „psychisches Umfeld“ gibt es nicht — psychische Prozesse sind interne Konstrukte."},
+ {t:"Welche Aussage(n) zu Emotion und Motivation ist/sind richtig?",o:["Maslow ist eine Emotionstheorie","Emotionen sind meist mit körperlicher Erregung verbunden","Motivation ist eine zeitbeständige Denkhaltung","Motivation unterscheidet sich von Emotion durch zusätzliche Zielorientierung"],c:[1,3],e:"Maslow ist eine Motivations-, keine Emotionstheorie. Eine zeitbeständige Denkhaltung ist die Einstellung. Motivation = Emotion + Zielorientierung."},
+ {t:"Warum ist es wichtig zu wissen, ob es ein High- oder Low-Involvement-Produkt ist?",o:["Mit dem Grad des Involvements unterscheidet sich der Informationsbedarf","Die Kundenzufriedenheit unterscheidet sich","Die Preiselastizität ist unterschiedlich","Emotionale Werbung funktioniert nur bei Low-Involvement"],c:[0],e:"Nur a) ist richtig: Das Involvement bestimmt den Informationsbedarf und damit die Marketing-Ansprache."},
+ {t:"Welche Aussage(n) zum Erfahrungskurvengesetz ist/sind richtig?",o:["Erfahrung wird durch Stückkosten gemessen","Verdopplung der kumulierten Menge → 20–30 % Stückkostensenkungspotenzial","Durch Erfahrungsaufbau können Produktionskosten gesenkt werden","Das Potenzial bezieht sich nur auf Produktionskosten (ohne Verwaltung)"],c:[1,2],e:"Erfahrung wird durch die kumulierte Menge gemessen (nicht Stückkosten). Das Potenzial umfasst ALLE wertschöpfungsbezogenen Stückkosten, nicht nur Produktion."},
+ {t:"Welche Aussage(n) zu strategischen Gruppen ist/sind NICHT richtig?",o:["Ähnliche Kompetenzen","Klassifikation = Form der Marktanalyse","Fokus liegt auf dem Kunden","Ähnliche Wettbewerbsstrategie"],c:[2],e:"Gefragt ist das FALSCHE: Der Fokus liegt auf den Wettbewerbern, nicht auf dem Kunden. a), b), d) sind korrekt."},
+ {t:"Was sind unstrukturierte Daten?",o:["Umfragedaten","Videos","Nonverbale Daten","Numerische Sekundärdaten"],c:[1,2],e:"Unstrukturiert = ohne vordefinierte numerische Ordnung: Videos & nonverbale Daten. Umfrage-/numerische Daten sind strukturiert."},
+ {t:"Welche Aussage(n) zur Produktpolitik ist/sind richtig?",o:["Es geht ausschließlich um ökonomische Ziele","Wachstums-, Gewinn- & Rationalisierungsziele sind ökonomische Beispiele","Neuproduktideen finden sich vor allem extern","Produktinnovation = vom Kunden als neu wahrgenommen"],c:[1,3],e:"Produktpolitik hat auch ökologische/soziale & psychographische Ziele (a falsch). Ideen kommen intern UND extern (c zu absolut)."},
+ {t:"Was ist/sind (ein) Nachteil(e) der Pionierstrategie?",o:["Sicherung wichtiger Distributionskanäle","Kostenvorteile durch Erfahrungskurve","Unsicherheit bzgl. der Nachfrageentwicklung","Vorübergehende Monopolsituation mit hohen Preisen"],c:[2],e:"Nur c) ist ein Nachteil. a), b), d) sind Pionier-VORteile."},
+ {t:"Welche Aussage(n) zur klassischen Preistheorie ist/sind richtig?",o:["Elastizität = absolute Mengenänderung / relative Preisänderung","Lineare PAF erlauben Bestimmung eines Maximalpreises","Aggregierte PAF ergeben sich aus mehreren individuellen PAF","Bei linearer PAF nimmt die Elastizität mit steigendem Preis betragsmäßig ab"],c:[1,2],e:"Elastizität = RELATIVE Mengen- / RELATIVE Preisänderung (a falsch). Bei linearer PAF NIMMT die Elastizität mit steigendem Preis ZU (d falsch)."},
+ {t:"Welches ist/sind KEINE Implementationsform(en) der Preisdifferenzierung?",o:["Leistungsbezogene Preisdifferenzierung","Konkurrenzbezogene Preisdifferenzierung","Mengenmäßige Preisdifferenzierung","Preisbündelung"],c:[1],e:"„Konkurrenzbezogen“ ist keine Form der Preisdifferenzierung. Leistungsbezogen, mengenmäßig & Preisbündelung sind gängige Formen."},
+ {t:"Welche Aussage(n) zu den Prozessschritten der Kommunikationsplanung ist/sind richtig?",o:["Auf den Posttest folgt direkt ein Pretest","2. Schritt Ausgestaltung, dann Pretest, dann Durchführung","Erster Schritt ist immer die Budgetierung","Reihenfolge ist unerheblich, man plant aus dem Bauch"],c:[1],e:"Korrekt: Ausgestaltung → Pretest → Durchführung. Der Pretest kommt VOR der Durchführung, nicht nach dem Posttest. Bauchplanung ist falsch."},
+ {t:"Welche Aussage(n) zur Gestaltung von Kommunikationsmaßnahmen ist/sind richtig?",o:["Inhaltliche, visuelle & auditive Elemente","Soziale/umweltbezogene Elemente gehören nur zu auditiven","Ausgestaltung immer nur auf einem Element","Inhaltlich: psychologische, rhetorische & argumentative Elemente"],c:[0,3],e:"Drei Gestaltungselemente (inhaltlich/visuell/auditiv), inhaltlich unterteilt in psychologisch/rhetorisch/argumentativ. b) und c) sind falsch."},
+ {t:"Unternehmen A vertreibt Kekse über Supermärkte UND den eigenen Online-Shop. Was zur Tiefe der Vertriebskanäle ist korrekt?",o:["A vertreibt direkt","A setzt auf intensiven Vertrieb","A vertreibt indirekt","A setzt auf exklusiven Vertrieb"],c:[0,2],e:"Über den eigenen Online-Shop = direkt (a); über Supermärkte = indirekt (c). Intensiv/exklusiv betrifft die Breite, nicht die Tiefe."},
+ {t:"Welche Aussage(n) zur Gestaltung des Vertriebssystems ist/sind korrekt?",o:["Breite des Systems = Anzahl Vertriebsstufen","Breite des Systems = Anzahl Vertriebspartner","Breite eines Kanals = Anzahl Vertriebspartner in diesem Kanal","Breite eines Kanals = Anzahl Kanäle in diesem Kanal"],c:[2],e:"Breite eines KANALS = Anzahl der Vertriebspartner in diesem Kanal. Breite des SYSTEMS = Anzahl der Kanäle (nicht Stufen/Partner)."},
+ {t:"Welche Aussage(n) zur Marktforschung ist/sind korrekt?",o:["Projekte können ohne strukturierte Prozessschritte laufen","Datengrundlage aus Primär- und/oder Sekundärdaten","Interne Probleme können identifiziert/gelöst werden","Sollte immer eine fundierte Managementfragestellung beantworten"],c:[1,3],e:"Marktforschung braucht strukturierte Schritte (a falsch). Sie dient v. a. markt-/kundenbezogenen Fragen; c ist in dieser Formulierung nicht die Kernaussage. Richtig: b & d."}
+];
+
+/* ============================ RECHEN-TRAINER ============================ */
+const CALCS = [
+ {id:"elast",title:"Preiselastizität",badge:"SS25 · Aufg. 5",
+  task:"Lineare PAF x(p)=a−b·p. Berechne die Preiselastizität bei Preis p und interpretiere.",
+  inputs:[{k:"a",l:"a (Sättigungsmenge)",v:1000},{k:"b",l:"b (Steigung)",v:40},{k:"p",l:"Preis p",v:20}],
+  solve:(v)=>{const x=v.a-v.b*v.p;const e=(-v.b)*(v.p/x);
+   return {steps:[
+    ["PAF & Absatz bei p",`x(${v.p}) = ${v.a} − ${v.b}·${v.p} = ${x}`],
+    ["Ableitung",`dx/dp = −b = −${v.b}`],
+    ["Elastizität ε = (dx/dp)·(p/x)",`ε = −${v.b} · (${v.p} / ${x}) = ${e.toFixed(2)}`]
+   ],result:`ε = ${e.toFixed(2)} → bei +1 % Preis sinkt der Absatz um ${Math.abs(e).toFixed(2)} % (${Math.abs(e)>1?'elastisch':'unelastisch'}).`};}},
+
+ {id:"maxima",title:"Umsatz- & Gewinnmaximum",badge:"SS25 · Aufg. 6",
+  task:"Lineare PAF x(p)=a−b·p und Kostenfunktion K(x)=Kf+kv·x. Berechne umsatz- & gewinnmaximalen Preis.",
+  inputs:[{k:"a",l:"a",v:260000},{k:"b",l:"b",v:200000},{k:"Kf",l:"Fixkosten Kf",v:520000},{k:"kv",l:"variable Stückk. kv",v:0.25}],
+  solve:(v)=>{const pu=v.a/(2*v.b);const pg=(v.a+v.b*v.kv)/(2*v.b);
+   return {steps:[
+    ["Umsatz U(p)=p·x(p)",`U = ${v.a}p − ${v.b}p²`],
+    ["U'(p)=0",`${v.a} − ${2*v.b}p = 0 → p = ${pu.toFixed(2)} €`],
+    ["Gewinn G=U−K",`G = (${v.a}−${v.b}p)·p − (${v.Kf} + ${v.kv}(${v.a}−${v.b}p))`],
+    ["G'(p)=0",`−${2*v.b}p + ${(v.a+v.b*v.kv)} = 0 → p = ${pg.toFixed(2)} €`]
+   ],result:`Umsatzmax. p = ${pu.toFixed(2)} € · Gewinnmax. p = ${pg.toFixed(2)} €`};}},
+
+ {id:"paf",title:"PAF aus zwei Punkten aufstellen",badge:"SS23 · Aufg. 6",
+  task:"Zwei Preis-Mengen-Punkte gegeben. Stelle die lineare PAF x=a−b·p auf und gib Maximalpreis an.",
+  inputs:[{k:"p1",l:"Preis 1",v:41.5},{k:"x1",l:"Menge 1",v:340},{k:"p2",l:"Preis 2",v:33},{k:"x2",l:"Menge 2",v:510}],
+  solve:(v)=>{const b=(v.x2-v.x1)/(v.p1-v.p2);const a=v.x1+b*v.p1;const pmax=a/b;
+   return {steps:[
+    ["Ansatz x=a−b·p",`I: ${v.x1}=a−${v.p1}b · II: ${v.x2}=a−${v.p2}b`],
+    ["b aus Gleichsetzen",`b = (${v.x2}−${v.x1})/(${v.p1}−${v.p2}) = ${b.toFixed(2)}`],
+    ["a einsetzen",`a = ${v.x1} + ${b.toFixed(2)}·${v.p1} = ${a.toFixed(2)}`],
+    ["Maximalpreis a/b",`p_max = ${a.toFixed(2)} / ${b.toFixed(2)} = ${pmax.toFixed(2)} €`]
+   ],result:`PAF: x = ${a.toFixed(2)} − ${b.toFixed(2)}·p · Sättigungsmenge ${a.toFixed(2)} · Maximalpreis ${pmax.toFixed(2)} €`};}},
+
+ {id:"erfahrung",title:"Erfahrungskurve & Lernrate",badge:"Probeklausur · Aufg. 3",
+  task:"k(x)=a·x^(−b). Berechne Lernrate und Stückkosten für kumulierte Mengen (kommagetrennt eingeben).",
+  inputs:[{k:"a",l:"a",v:100},{k:"b",l:"b",v:0.25},{k:"xs",l:"kumulierte Mengen (Komma)",v:"20000,65000,115000",t:"text"}],
+  solve:(v)=>{const lr=1-Math.pow(2,-v.b);const xs=String(v.xs).split(',').map(s=>parseFloat(s.trim())).filter(n=>!isNaN(n));
+   const rows=xs.map(x=>[`k(${x})`,`${v.a}·${x}^(−${v.b}) = ${(v.a*Math.pow(x,-v.b)).toFixed(2)} €`]);
+   return {steps:[["Lernrate = 1 − 2^(−b)",`1 − 2^(−${v.b}) = ${lr.toFixed(4)} ≈ ${(lr*100).toFixed(0)} %`],...rows],
+    result:`Lernrate ≈ ${(lr*100).toFixed(0)} % · Stückkosten: ${xs.map(x=>(v.a*Math.pow(x,-v.b)).toFixed(2)+' €').join(' → ')}`};}},
+
+ {id:"conjoint",title:"Conjoint: Wichtigkeit & Gesamtnutzen",badge:"SS23 · Aufg. 5",
+  task:"Gib je Merkmal die Teilnutzen-Spanne (max−min) ein. Berechnet relative Wichtigkeit. Optional: Teilnutzen einer Alternative (Komma) für den Gesamtnutzen.",
+  inputs:[{k:"sp",l:"Spannen je Merkmal (Komma)",v:"0.5,0.6,0.5,0.9",t:"text"},{k:"tn",l:"Teilnutzen einer Alternative (Komma)",v:"0.8,0.6,0.5,0.7",t:"text"}],
+  solve:(v)=>{const sp=String(v.sp).split(',').map(s=>parseFloat(s.trim())).filter(n=>!isNaN(n));const sum=sp.reduce((a,c)=>a+c,0);
+   const rows=sp.map((s,i)=>[`Merkmal ${i+1}`,`${s} / ${sum.toFixed(2)} · 100 = ${(s/sum*100).toFixed(2)} %`]);
+   const tn=String(v.tn).split(',').map(s=>parseFloat(s.trim())).filter(n=>!isNaN(n));const gn=tn.reduce((a,c)=>a+c,0);
+   return {steps:[["Summe der Spannen",`Σ = ${sum.toFixed(2)}`],...rows,["Gesamtnutzen = Σ Teilnutzen",`${tn.join(' + ')} = ${gn.toFixed(2)}`]],
+    result:`Wichtigstes Merkmal: Nr. ${sp.indexOf(Math.max(...sp))+1} (${(Math.max(...sp)/sum*100).toFixed(2)} %) · Gesamtnutzen der Alternative = ${gn.toFixed(2)}`};}},
+
+ {id:"regression",title:"Regression & Bestimmtheitsmaß r²",badge:"SS23 · Aufg. 8",
+  task:"x- und y-Werte (kommagetrennt, gleich lang). Berechnet Schätzfunktion y=a+bx und r².",
+  inputs:[{k:"xs",l:"x-Werte (Komma)",v:"1,5,3,2,4",t:"text"},{k:"ys",l:"y-Werte (Komma)",v:"15,23,21,19,24",t:"text"}],
+  solve:(v)=>{const xs=String(v.xs).split(',').map(s=>parseFloat(s.trim()));const ys=String(v.ys).split(',').map(s=>parseFloat(s.trim()));
+   const n=xs.length;const sx=xs.reduce((a,c)=>a+c,0),sy=ys.reduce((a,c)=>a+c,0);
+   const sxy=xs.reduce((a,c,i)=>a+c*ys[i],0);const sx2=xs.reduce((a,c)=>a+c*c,0);
+   const b=(n*sxy-sx*sy)/(n*sx2-sx*sx);const a=(sy/n)-b*(sx/n);const my=sy/n;
+   const ssr=xs.reduce((acc,c)=>{const yh=a+b*c;return acc+(yh-my)**2;},0);
+   const sst=ys.reduce((acc,c)=>acc+(c-my)**2,0);const r2=ssr/sst;
+   return {steps:[
+    ["Summen",`n=${n} · Σx=${sx} · Σy=${sy} · Σxy=${sxy} · Σx²=${sx2}`],
+    ["b = [nΣxy − ΣxΣy]/[nΣx² − (Σx)²]",`= [${n}·${sxy} − ${sx}·${sy}] / [${n}·${sx2} − ${sx}²] = ${b.toFixed(2)}`],
+    ["a = ȳ − b·x̄",`= ${(sy/n).toFixed(2)} − ${b.toFixed(2)}·${(sx/n).toFixed(2)} = ${a.toFixed(2)}`],
+    ["r² = Σ(ŷ−ȳ)² / Σ(y−ȳ)²",`= ${ssr.toFixed(2)} / ${sst.toFixed(2)} = ${r2.toFixed(4)}`]
+   ],result:`y = ${a.toFixed(2)} + ${b.toFixed(2)}·x · r² = ${r2.toFixed(4)} → ${(r2*100).toFixed(1)} % der Varianz von y erklärt.`};}},
+
+ {id:"streuplan",title:"TKP, Bruttoreichweite & Streuplan",badge:"SS25 · Aufg. 7",
+  task:"Je Medium: Leser (Mio.), Kosten/Ausgabe (€), Ausgaben/Jahr — als Zeilen „Leser;Kosten;Ausgaben“. Budget optional für Streuplan.",
+  inputs:[{k:"data",l:"Medien (eine Zeile je Medium)",v:"5.1;43000;4\n3.6;75000;3\n2.4;24000;6",t:"area"},{k:"budget",l:"Budget € (0 = nur Bruttoreichweite)",v:0}],
+  solve:(v)=>{const rows=String(v.data).trim().split('\n').map(r=>r.split(/[;,\t]/).map(s=>parseFloat(s.trim())));
+   const steps=[];let brutto=0;const tkps=[];
+   rows.forEach((r,i)=>{const[leser,kosten,ausg]=r;const tkp=(kosten/(leser*1e6))*1000;tkps.push({i,tkp,leser,kosten,ausg});
+    brutto+=leser*ausg;steps.push([`Medium ${i+1} · TKP`,`(${kosten}/${leser} Mio)·1000 = ${tkp.toFixed(2)} € · Kontakte ${leser}·${ausg} = ${(leser*ausg).toFixed(2)} Mio`]);});
+   steps.push(["Bruttoreichweite = Σ (Leser·Ausgaben)",rows.map(r=>`${r[0]}·${r[2]}`).join(' + ')+` = ${brutto.toFixed(2)} Mio Kontakte`]);
+   let res=`Bruttoreichweite = ${brutto.toFixed(2)} Mio Kontakte`;
+   if(v.budget>0){let bud=v.budget;const sorted=[...tkps].sort((x,y)=>x.tkp-y.tkp);const plan=[];
+    sorted.forEach(m=>{const cost=m.kosten*m.ausg;if(bud>=cost){bud-=cost;plan.push(`Medium ${m.i+1}: ${m.ausg} Ausgaben (−${cost.toLocaleString('de')} €)`);}
+     else{const k=Math.floor(bud/m.kosten);if(k>0){bud-=k*m.kosten;plan.push(`Medium ${m.i+1}: ${k} Ausgaben (−${(k*m.kosten).toLocaleString('de')} €)`);}}});
+    steps.push(["Streuplan (günstigster TKP zuerst)",plan.join(' · ')]);
+    steps.push(["Restbudget",`${bud.toLocaleString('de')} €`]);
+    res=`Bruttoreichweite ${brutto.toFixed(2)} Mio · Restbudget ${bud.toLocaleString('de')} €`;}
+   return {steps,result:res};}}
+];
+
+/* ============================ ENGINE ============================ */
+const KEY="mktLerntool_v1";
+let progress=JSON.parse(localStorage.getItem(KEY)||"{}");
+function save(){localStorage.setItem(KEY,JSON.stringify(progress));}
+function allConcepts(){return MODULES.flatMap(m=>m.concepts.map(c=>m.id+":"+c.id));}
+function modDone(m){const ids=m.concepts.map(c=>m.id+":"+c.id);const d=ids.filter(i=>progress[i]).length;return{d,t:ids.length};}
+function wLabel(w){return w==="hoch"?"Klausurrelevant":w==="mittel"?"Wichtig":"Ergänzend";}
+
+function renderNav(){
+  let h='<div class="navsec">Themen</div>';
+  h+='<div class="navitem" data-mod="__overview"><span class="ic">🏠</span> Übersicht</div>';
+  MODULES.forEach(m=>{const{d,t}=modDone(m);
+   h+=`<div class="navitem ${d===t&&t>0?'done':''}" data-mod="${m.id}"><span class="ic">${m.ic}</span> ${m.title}<span class="mprog">${d}/${t}</span></div>`;});
+  document.getElementById('navlist').innerHTML=h;
+  document.querySelectorAll('.navitem').forEach(el=>{
+   el.onclick=()=>{const mod=el.getAttribute('data-mod');const tool=el.getAttribute('data-tool');
+    document.querySelectorAll('.navitem').forEach(x=>x.classList.remove('active'));el.classList.add('active');
+    if(tool)renderTool(tool);else if(mod==="__overview")renderOverview();else renderModule(mod);
+    document.getElementById('main').scrollTop=0;};});
+  updateGlobal();
+}
+function updateGlobal(){const all=allConcepts();const done=all.filter(i=>progress[i]).length;const pct=all.length?Math.round(done/all.length*100):0;
+  document.getElementById('gfill').style.width=pct+'%';document.getElementById('gtxt').textContent=pct+' % gelernt';
+  document.getElementById('gcnt').textContent=done+' / '+all.length;
+  MODULES.forEach(m=>{const{d,t}=modDone(m);const el=document.querySelector(`[data-mod="${m.id}"]`);
+   if(el){el.querySelector('.mprog').textContent=d+'/'+t;el.classList.toggle('done',d===t&&t>0);}});
+}
+
+function renderOverview(){
+  const all=allConcepts();const done=all.filter(i=>progress[i]).length;const pct=all.length?Math.round(done/all.length*100):0;
+  let h=`<div class="hero"><div class="crumb">FAU · Marketing (SoSe)</div>
+   <h2>Deine Klausur-Kommandozentrale</h2>
+   <p>Klick dich Modul für Modul durch, hak Konzepte ab, wenn du sie verstanden hast, und übe gezielt mit Rechen-Trainer, MC-Test, Karteikarten & Diagrammen. Dein Fortschritt wird lokal gespeichert.</p></div>`;
+  h+=`<div class="stats">
+   <div class="stat"><div class="n">60</div><div class="l">Minuten · 60 Punkte</div></div>
+   <div class="stat"><div class="n">30 / 30</div><div class="l">Offene Fragen / MC</div></div>
+   <div class="stat"><div class="n">${MODULES.length}</div><div class="l">Themenmodule</div></div>
+   <div class="stat"><div class="n">${pct}%</div><div class="l">Dein Fortschritt</div></div></div>`;
+  h+=`<div class="examstruct">
+   <div class="esbox"><h4>📝 Aufbau der Klausur</h4>
+    <div class="esrow"><span>Teil A — 9 offene Fragen</span><b>30 P</b></div>
+    <div class="esrow"><span>Teil B — 15 MC-Fragen (à 2 P, alles-oder-nichts)</span><b>30 P</b></div>
+    <div class="esrow"><span>Hilfsmittel</span><b>nicht-progr. Taschenrechner</b></div>
+    <div class="esrow"><span>Runden</span><b>2 Nachkommastellen</b></div></div>
+   <div class="esbox"><h4>🧮 Diese Rechenaufgaben musst du können</h4>
+    <div class="esrow"><span>Preiselastizität</span><b>sehr häufig</b></div>
+    <div class="esrow"><span>Umsatz-/Gewinnmaximum</span><b>sehr häufig</b></div>
+    <div class="esrow"><span>PAF aufstellen</span><b>häufig</b></div>
+    <div class="esrow"><span>Conjoint (Wichtigkeit/Nutzen)</span><b>häufig</b></div>
+    <div class="esrow"><span>Regression & r²</span><b>häufig</b></div>
+    <div class="esrow"><span>TKP / Bruttoreichweite / Streuplan</span><b>häufig</b></div>
+    <div class="esrow"><span>Erfahrungskurve / Lernrate</span><b>mittel</b></div></div></div>`;
+  h+=`<div class="esbox" style="margin-bottom:22px"><h4>⭐ Offene-Frage-Klassiker (kamen mehrfach dran)</h4>
+    <div class="esrow"><span>ELM-Modell skizzieren + Elaboration definieren</span><b>Konsum</b></div>
+    <div class="esrow"><span>Buying Center + 3 Rollen</span><b>Orga</b></div>
+    <div class="esrow"><span>Strategieentwicklungsprozess (5 Schritte)</span><b>Strategie</b></div>
+    <div class="esrow"><span>4 Arten digitaler Plattformen einordnen</span><b>Digital</b></div>
+    <div class="esrow"><span>Brutto-/Nettoreichweite + berechnen</span><b>Kommunikation</b></div>
+    <div class="esrow"><span>Key-Account-Kriterien + Vertriebsweg</span><b>Vertrieb</b></div>
+    <div class="esrow"><span>Datenmethode zuordnen + Primär/Sekundär</span><b>Marktforschung</b></div></div>`;
+  h+=`<h4 style="margin:6px 0 12px;font-size:16px">Themenmodule <span style="color:var(--tx3);font-weight:400;font-size:13px">— nach Klausurrelevanz</span></h4><div class="modcards">`;
+  MODULES.forEach(m=>{const{d,t}=modDone(m);const p=t?Math.round(d/t*100):0;
+   h+=`<div class="modcard" data-goto="${m.id}"><div class="ic">${m.ic}</div>
+    <span class="badge b-${m.weight}">${m.weight==='hoch'?'Hoch':m.weight==='mittel'?'Mittel':'Niedrig'}</span>
+    <h4 style="margin-top:8px">${m.title}</h4>
+    <div class="pb"><div class="pf" style="width:${p}%"></div></div><div class="pl">${d}/${t} Konzepte</div></div>`;});
+  h+=`</div><div class="footer">Erstellt aus deinen Kommilitonen-Zusammenfassungen, Übungs-/Tutoriums-Rechenaufgaben und den Alt-/Probeklausuren SS23–SS25. Alle Rechenwege gegen die Musterlösungen verifiziert. · <span class="reset" onclick="resetAll()">Fortschritt zurücksetzen</span></div>`;
+  document.getElementById('content').innerHTML=h;
+  document.querySelectorAll('[data-goto]').forEach(el=>el.onclick=()=>{const id=el.getAttribute('data-goto');
+   document.querySelectorAll('.navitem').forEach(x=>x.classList.toggle('active',x.getAttribute('data-mod')===id));renderModule(id);document.getElementById('main').scrollTop=0;});
+}
+
+function renderModule(id){
+  const m=MODULES.find(x=>x.id===id);
+  let h=`<div class="crumb">Themen · ${wLabel(m.weight)}</div><h2 class="page">${m.ic} ${m.title}</h2><p class="pdesc">${m.desc}</p>`;
+  m.concepts.forEach(c=>{const key=m.id+":"+c.id;const on=progress[key];
+   h+=`<div class="concept" data-key="${key}">
+    <div class="chead">
+     <div class="chk ${on?'on':''}" data-check="${key}">✓</div>
+     <div class="ctitle">${c.t}</div>
+     <div class="cmeta"><span class="badge b-${c.w}">${c.w==='hoch'?'Klausur':c.w==='mittel'?'Wichtig':'Ergänzend'}</span><span class="arrow">▶</span></div>
+    </div>
+    <div class="cbody"><div class="cinner">${c.body}</div></div></div>`;});
+  h+=`<div style="margin-top:24px;display:flex;gap:10px;flex-wrap:wrap">
+    <button class="btn ghost" onclick="markAll('${m.id}')">Alle als verstanden markieren</button>
+    <button class="btn ghost" onclick="renderTool('flash','${m.id}')">🃏 Karteikarten zu ${m.title}</button></div>`;
+  document.getElementById('content').innerHTML=h;
+  document.querySelectorAll('.chead').forEach(head=>{head.onclick=(e)=>{if(e.target.closest('[data-check]'))return;
+    const con=head.closest('.concept');const body=con.querySelector('.cbody');const open=con.classList.toggle('open');
+    body.style.maxHeight=open?body.scrollHeight+'px':'0';
+    if(open)setTimeout(()=>{body.style.maxHeight=body.scrollHeight+'px';renderDiagrams(con);},60);};});
+  document.querySelectorAll('[data-check]').forEach(ch=>{ch.onclick=(e)=>{e.stopPropagation();const k=ch.getAttribute('data-check');
+    progress[k]=!progress[k];ch.classList.toggle('on',progress[k]);save();updateGlobal();};});
+}
+function markAll(id){const m=MODULES.find(x=>x.id===id);m.concepts.forEach(c=>progress[m.id+":"+c.id]=true);save();renderModule(id);updateGlobal();}
+function resetAll(){if(confirm('Wirklich den gesamten Fortschritt löschen?')){progress={};save();renderNav();renderOverview();}}
+
+/* ---- TOOLS ---- */
+function renderTool(tool,filterMod){
+  document.querySelectorAll('.navitem').forEach(x=>x.classList.toggle('active',x.getAttribute('data-tool')===tool));
+  if(tool==='calc')renderCalc();else if(tool==='mc')renderMC();else if(tool==='flash')renderFlash(filterMod);else if(tool==='diagram')renderDiagramPage();
+  document.getElementById('main').scrollTop=0;
+}
+
+function renderCalc(){
+  let h=`<div class="crumb">Üben</div><h2 class="page">🧮 Rechen-Trainer</h2><p class="pdesc">Die 8 klausurrelevanten Rechentypen — mit den Originalzahlen vorbelegt. Ändere die Werte und lass dir den kompletten Lösungsweg Schritt für Schritt zeigen.</p>`;
+  CALCS.forEach(c=>{h+=`<div class="calc" data-calc="${c.id}">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px"><h3>${c.title}</h3><span class="badge b-rechnen">${c.badge}</span></div>
+    <div class="task">${c.task}</div><div class="inrow">`;
+   c.inputs.forEach(inp=>{if(inp.t==='area')h+=`<div class="infield" style="flex-basis:100%"><label>${inp.l}</label><textarea rows="3" style="width:100%;background:var(--bg);border:1px solid var(--line);color:var(--tx);padding:9px 12px;border-radius:9px;font-family:inherit;font-size:14px" data-in="${inp.k}">${inp.v}</textarea></div>`;
+    else h+=`<div class="infield"><label>${inp.l}</label><input type="${inp.t==='text'?'text':'number'}" step="any" value="${inp.v}" data-in="${inp.k}"></div>`;});
+   h+=`</div><button class="btn" onclick="runCalc('${c.id}')">Lösungsweg berechnen</button>
+    <div class="steps" id="steps-${c.id}"></div></div>`;});
+  document.getElementById('content').innerHTML=h;
+}
+function runCalc(id){const c=CALCS.find(x=>x.id===id);const box=document.querySelector(`[data-calc="${id}"]`);
+  const v={};c.inputs.forEach(inp=>{const el=box.querySelector(`[data-in="${inp.k}"]`);v[inp.k]=(inp.t==='text'||inp.t==='area')?el.value:parseFloat(el.value);});
+  const out=c.solve(v);const st=document.getElementById('steps-'+id);
+  st.innerHTML=out.steps.map(s=>`<div class="step"><div class="sn">${s[0]}</div><div class="sf">${s[1]}</div></div>`).join('')+`<div class="result"><b>Ergebnis:</b> ${out.result}</div>`;
+  st.classList.add('show');}
+
+let mcState={};
+function renderMC(){
+  mcState={};let h=`<div class="crumb">Üben</div><h2 class="page">✅ MC-Selbsttest</h2><p class="pdesc">15 Multiple-Choice-Fragen aus der Probeklausur SS25 — mit verifizierten Lösungen. Achtung: pro Frage können 1–3 Aussagen richtig sein. In der echten Klausur gilt „alles oder nichts".</p>`;
+  h+=`<div class="scorebar"><div><b>Ergebnis:</b> <span class="sc" id="mcscore">0</span> / ${MC.length} Fragen komplett richtig</div><button class="btn ghost" onclick="renderMC()">Neu starten</button></div>`;
+  MC.forEach((q,qi)=>{h+=`<div class="mcq" data-q="${qi}"><div class="qtop"><div class="qt">${q.t}</div><span class="qnum">#${qi+1}</span></div>`;
+   q.o.forEach((o,oi)=>{h+=`<div class="mcopt" data-opt="${oi}"><div class="box">✓</div><div><span class="ol">${'abcd'[oi]})</span> ${o}</div></div>`;});
+   h+=`<div class="mcbtns"><button class="btn" onclick="checkMC(${qi})">Antwort prüfen</button></div><div class="mcfeedback" id="fb-${qi}"></div></div>`;});
+  document.getElementById('content').innerHTML=h;
+  document.querySelectorAll('.mcq').forEach(mcq=>{const qi=+mcq.getAttribute('data-q');mcState[qi]=new Set();
+   mcq.querySelectorAll('.mcopt').forEach(op=>{op.onclick=()=>{if(mcq.classList.contains('done'))return;const oi=+op.getAttribute('data-opt');
+    if(mcState[qi].has(oi)){mcState[qi].delete(oi);op.classList.remove('sel');}else{mcState[qi].add(oi);op.classList.add('sel');}};});});
+}
+function checkMC(qi){const q=MC[qi];const mcq=document.querySelector(`[data-q="${qi}"]`);if(mcq.classList.contains('done'))return;
+  mcq.classList.add('done');const sel=mcState[qi];const correct=new Set(q.c);let ok=sel.size===correct.size&&[...sel].every(x=>correct.has(x));
+  mcq.querySelectorAll('.mcopt').forEach(op=>{const oi=+op.getAttribute('data-opt');op.classList.remove('sel');
+   if(correct.has(oi))op.classList.add('correct');else if(sel.has(oi))op.classList.add('wrong');});
+  const fb=document.getElementById('fb-'+qi);fb.className='mcfeedback show '+(ok?'ok':'no');
+  fb.innerHTML=`<b>${ok?'✔ Richtig!':'✘ Nicht ganz.'}</b> Korrekt: ${[...correct].map(i=>'abcd'[i]+')').join(', ')}. ${q.e}`;
+  if(ok){mcq.dataset.right="1";}updateMCScore();}
+function updateMCScore(){const s=[...document.querySelectorAll('.mcq[data-right="1"]')].length;document.getElementById('mcscore').textContent=s;}
+
+function renderFlash(filterMod){
+  const mods=filterMod?MODULES.filter(m=>m.id===filterMod):MODULES;
+  let h=`<div class="crumb">Üben${filterMod?' · '+mods[0].title:''}</div><h2 class="page">🃏 Karteikarten</h2><p class="pdesc">Klick auf eine Karte, um die Definition aufzudecken. Ideal für die offenen Fragen, in denen Definitionen abgefragt werden.</p>`;
+  h+=`<div class="toolbar"><button class="tbtn ${!filterMod?'active':''}" onclick="renderFlash()">Alle</button>`;
+  MODULES.forEach(m=>{if(m.flash&&m.flash.length)h+=`<button class="tbtn ${filterMod===m.id?'active':''}" onclick="renderFlash('${m.id}')">${m.ic} ${m.title}</button>`;});
+  h+=`</div><div class="fcwrap">`;
+  mods.forEach(m=>{(m.flash||[]).forEach(f=>{h+=`<div class="flip" onclick="this.classList.toggle('flipped')">
+    <div class="flipin"><div class="fface ffront"><span class="tag badge b-niedrig">${m.title}</span><h4>${f.q}</h4><span class="hint">Karte umdrehen ↻</span></div>
+    <div class="fface fback"><p>${f.a}</p></div></div></div>`;});});
+  h+=`</div>`;document.getElementById('content').innerHTML=h;
+}
+
+function renderDiagramPage(){
+  let h=`<div class="crumb">Üben</div><h2 class="page">📈 Diagramme, die du skizzieren können musst</h2><p class="pdesc">Diese Grafiken tauchen in offenen Klausurfragen auf. Klick auf die Elemente, um Erklärungen zu bekommen.</p>`;
+  h+=`<div class="diagram"><div style="display:flex;justify-content:space-between;align-items:flex-start"><h3>Elaboration Likelihood Modell</h3><span class="badge b-hoch">SS23 & SS25</span></div><div class="task">Aufgabe: Elaboration definieren und das Modell skizzieren.</div><div class="dghint">Klick auf die beiden Routen.</div><div class="svgbox" id="dg-elm"></div><div class="dgcap" id="cap-elm">Elaboration = Umfang, zu dem eine Person Informationen sorgfältig kognitiv verarbeitet.</div></div>`;
+  h+=`<div class="diagram"><div style="display:flex;justify-content:space-between;align-items:flex-start"><h3>Ansoff-Matrix</h3><span class="badge b-hoch">Strategie</span></div><div class="task">Aufgabe: Wachstumsstrategien den Feldern zuordnen.</div><div class="dghint">Klick auf ein Feld.</div><div class="svgbox" id="dg-ansoff"></div><div class="dgcap" id="cap-ansoff">Die vier Marktfeldstrategien nach Ansoff (Produkt × Markt, jeweils alt/neu).</div></div>`;
+  h+=`<div class="diagram"><div style="display:flex;justify-content:space-between;align-items:flex-start"><h3>Preis-Absatz-Funktion</h3><span class="badge b-hoch">Preis</span></div><div class="task">Aufgabe: lineare PAF skizzieren, Sättigungsmenge & Maximalpreis eintragen.</div><div class="dghint">Klick auf die Achsenpunkte.</div><div class="svgbox" id="dg-paf"></div><div class="dgcap" id="cap-paf">x(p) = a − b·p. Achsenschnittpunkte: Sättigungsmenge a (bei p=0) und Maximalpreis a/b (bei x=0).</div></div>`;
+  h+=`<div class="diagram"><div style="display:flex;justify-content:space-between;align-items:flex-start"><h3>Diffusionskurve nach Rogers</h3><span class="badge b-mittel">Produkt</span></div><div class="task">Aufgabe: die 5 Adopterkategorien einordnen.</div><div class="dghint">Klick auf ein Segment.</div><div class="svgbox" id="dg-rogers"></div><div class="dgcap" id="cap-rogers">Adoption folgt einer Glockenkurve — von Innovatoren bis Nachzüglern.</div></div>`;
+  h+=`<div class="diagram"><div style="display:flex;justify-content:space-between;align-items:flex-start"><h3>Arten digitaler Plattformen</h3><span class="badge b-hoch">SS25 Aufg. 4</span></div><div class="task">Aufgabe: 4 Plattformarten anhand zweier Dimensionen einordnen + Achsen beschriften.</div><div class="dghint">Klick auf ein Quadranten-Feld.</div><div class="svgbox" id="dg-plat"></div><div class="dgcap" id="cap-plat">Zwei Dimensionen: Transaktions- vs. Innovationsplattform × Anzahl der Seiten.</div></div>`;
+  h+=`<div class="diagram"><div style="display:flex;justify-content:space-between;align-items:flex-start"><h3>Strategieentwicklungsprozess</h3><span class="badge b-hoch">SS25 Aufg. 3</span></div><div class="task">Aufgabe: den Prozess schrittweise erläutern.</div><div class="dghint">Klick auf einen Schritt.</div><div class="svgbox" id="dg-strat"></div><div class="dgcap" id="cap-strat">Fünf Schritte von der Analyse bis zur Kontrolle.</div></div>`;
+  document.getElementById('content').innerHTML=h;
+  drawELM('dg-elm','cap-elm');drawAnsoff('dg-ansoff','cap-ansoff');drawPAF('dg-paf','cap-paf');drawRogers('dg-rogers','cap-rogers');drawPlatforms('dg-plat','cap-plat');drawStrat('dg-strat','cap-strat');
+}
+/* diagrams inside concept cards (ELM under konsum, ansoff under strat, etc.) — placeholder hook */
+function renderDiagrams(container){}
+
+/* ---------- SVG DIAGRAMS ---------- */
+function cap(id,txt){const el=document.getElementById(id);if(el)el.innerHTML=txt;}
+function drawELM(box,capId){document.getElementById(box).innerHTML=`
+<svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" style="min-width:640px">
+ <rect x="20" y="120" width="140" height="56" rx="10" fill="#232d43" stroke="#2d3852"/>
+ <text x="90" y="153" fill="#e8edf7" font-size="13" text-anchor="middle">Reiz / Botschaft</text>
+ <line x1="160" y1="148" x2="230" y2="148" stroke="#4f7cff" stroke-width="2"/>
+ <polygon points="230,148 222,143 222,153" fill="#4f7cff"/>
+ <rect x="230" y="118" width="150" height="60" rx="10" fill="#1c2436" stroke="#4f7cff"/>
+ <text x="305" y="143" fill="#7b9bff" font-size="12" text-anchor="middle">Elaborations-</text>
+ <text x="305" y="160" fill="#7b9bff" font-size="12" text-anchor="middle">wahrscheinlichkeit?</text>
+ <g class="hot" id="elm-central"><rect x="440" y="40" width="250" height="64" rx="10" fill="rgba(55,211,153,.12)" stroke="#37d399"/>
+  <text x="565" y="66" fill="#37d399" font-size="13" text-anchor="middle" font-weight="bold">Zentrale Route (hoch)</text>
+  <text x="565" y="87" fill="#9aa7c2" font-size="11" text-anchor="middle">sorgfältige Argumentprüfung</text></g>
+ <g class="hot" id="elm-periph"><rect x="440" y="192" width="250" height="64" rx="10" fill="rgba(255,180,58,.1)" stroke="#ffb43a"/>
+  <text x="565" y="218" fill="#ffb43a" font-size="13" text-anchor="middle" font-weight="bold">Periphere Route (niedrig)</text>
+  <text x="565" y="239" fill="#9aa7c2" font-size="11" text-anchor="middle">Randreize (Attraktivität, Musik)</text></g>
+ <path d="M380,140 C410,140 410,72 440,72" stroke="#37d399" stroke-width="2" fill="none"/>
+ <path d="M380,156 C410,156 410,224 440,224" stroke="#ffb43a" stroke-width="2" fill="none"/>
+</svg>`;
+ document.getElementById('elm-central').onclick=()=>cap(capId,'<b>Zentrale Route:</b> Bei hoher Elaboration werden Argumente sorgfältig geprüft → stabile, veränderungsresistente Einstellung. Voraussetzung: Motivation + Fähigkeit.');
+ document.getElementById('elm-periph').onclick=()=>cap(capId,'<b>Periphere Route:</b> Bei niedriger Elaboration entscheiden Randreize (Attraktivität des Senders, Musik, Anzahl der Argumente) → eher labile Einstellung.');
+}
+function drawAnsoff(box,capId){const f=[['ansoff-md','Markt-<tspan>durchdringung</tspan>','#4f7cff',40,40],['ansoff-pe','Produkt-<tspan>entwicklung</tspan>','#7b9bff',300,40],['ansoff-me','Markt-<tspan>entwicklung</tspan>','#37d399',40,160],['ansoff-div','Diversifikation','#ffb43a',300,160]];
+ let g='';f.forEach(q=>{g+=`<g class="hot" id="${q[0]}"><rect x="${q[3]}" y="${q[4]}" width="250" height="110" rx="10" fill="${q[2]}22" stroke="${q[2]}"/><text x="${q[3]+125}" y="${q[4]+62}" fill="#e8edf7" font-size="15" text-anchor="middle" font-weight="bold">${q[1].replace(/<[^>]+>/g,'')}</text></g>`;});
+ document.getElementById(box).innerHTML=`<svg viewBox="0 0 570 300" xmlns="http://www.w3.org/2000/svg" style="min-width:560px">
+  <text x="165" y="24" fill="#9aa7c2" font-size="12" text-anchor="middle">bestehende Produkte</text>
+  <text x="425" y="24" fill="#9aa7c2" font-size="12" text-anchor="middle">neue Produkte</text>
+  <text x="18" y="100" fill="#9aa7c2" font-size="12" text-anchor="middle" transform="rotate(-90,18,100)">best. Märkte</text>
+  <text x="18" y="220" fill="#9aa7c2" font-size="12" text-anchor="middle" transform="rotate(-90,18,220)">neue Märkte</text>${g}</svg>`;
+ const info={'ansoff-md':'<b>Marktdurchdringung:</b> bestehende Produkte in bestehenden Märkten stärker verkaufen (mehr Nutzung, Kunden abwerben).','ansoff-pe':'<b>Produktentwicklung:</b> neue Produkte für bestehende Märkte.','ansoff-me':'<b>Marktentwicklung:</b> bestehende Produkte in neuen Märkten (neue Regionen/Segmente).','ansoff-div':'<b>Diversifikation:</b> neue Produkte in neuen Märkten — höchstes Risiko.'};
+ f.forEach(q=>document.getElementById(q[0]).onclick=()=>cap(capId,info[q[0]]));
+}
+function drawPAF(box,capId){document.getElementById(box).innerHTML=`<svg viewBox="0 0 560 300" xmlns="http://www.w3.org/2000/svg" style="min-width:520px">
+  <line x1="70" y1="250" x2="520" y2="250" stroke="#6b779a" stroke-width="1.5"/><line x1="70" y1="250" x2="70" y2="30" stroke="#6b779a" stroke-width="1.5"/>
+  <text x="60" y="40" fill="#9aa7c2" font-size="12" text-anchor="end">x</text><text x="515" y="270" fill="#9aa7c2" font-size="12">p</text>
+  <line x1="70" y1="60" x2="450" y2="250" stroke="#4f7cff" stroke-width="2.5"/>
+  <g class="hot" id="paf-a"><circle cx="70" cy="60" r="7" fill="#37d399"/><text x="80" y="55" fill="#37d399" font-size="12">a = Sättigungsmenge</text></g>
+  <g class="hot" id="paf-max"><circle cx="450" cy="250" r="7" fill="#ffb43a"/><text x="430" y="240" fill="#ffb43a" font-size="12" text-anchor="end">a/b = Maximalpreis</text></g>
+  <text x="250" y="130" fill="#7b9bff" font-size="13">x(p) = a − b·p</text></svg>`;
+ document.getElementById('paf-a').onclick=()=>cap(capId,'<b>Sättigungsmenge a:</b> Absatz bei p=0 (Schnittpunkt mit der Mengenachse). Größtmöglicher Absatz.');
+ document.getElementById('paf-max').onclick=()=>cap(capId,'<b>Maximalpreis a/b:</b> Preis, bei dem der Absatz null wird (Schnittpunkt mit der Preisachse). Steigung = −b.');
+}
+function drawRogers(box,capId){document.getElementById(box).innerHTML=`<svg viewBox="0 0 620 280" xmlns="http://www.w3.org/2000/svg" style="min-width:600px">
+  <path d="M40,240 C140,240 150,60 310,60 C470,60 480,240 580,240" fill="none" stroke="#2d3852" stroke-width="1.5"/>
+  <g class="hot" id="r0"><rect x="40" y="150" width="70" height="90" fill="rgba(79,124,255,.18)"/><text x="75" y="258" fill="#9aa7c2" font-size="10" text-anchor="middle">Innov. 2,5%</text></g>
+  <g class="hot" id="r1"><rect x="110" y="110" width="90" height="130" fill="rgba(123,155,255,.18)"/><text x="155" y="258" fill="#9aa7c2" font-size="10" text-anchor="middle">frühe Ad. 13,5%</text></g>
+  <g class="hot" id="r2"><rect x="200" y="70" width="110" height="170" fill="rgba(55,211,153,.15)"/><text x="255" y="258" fill="#9aa7c2" font-size="10" text-anchor="middle">frühe Mehrh. 34%</text></g>
+  <g class="hot" id="r3"><rect x="310" y="70" width="110" height="170" fill="rgba(255,180,58,.15)"/><text x="365" y="258" fill="#9aa7c2" font-size="10" text-anchor="middle">späte Mehrh. 34%</text></g>
+  <g class="hot" id="r4"><rect x="420" y="150" width="120" height="90" fill="rgba(255,92,114,.15)"/><text x="480" y="258" fill="#9aa7c2" font-size="10" text-anchor="middle">Nachzügler 16%</text></g></svg>`;
+ const info=['<b>Innovatoren (2,5 %):</b> risikofreudig, technikbegeistert, probieren als Erste.','<b>Frühe Adopter (13,5 %):</b> Meinungsführer, prägen Trends.','<b>Frühe Mehrheit (34 %):</b> überlegt, übernimmt nach Bewährung.','<b>Späte Mehrheit (34 %):</b> skeptisch, erst bei breiter Akzeptanz.','<b>Nachzügler (16 %):</b> traditionell, adoptieren zuletzt.'];
+ for(let i=0;i<5;i++)document.getElementById('r'+i).onclick=()=>cap(capId,info[i]);
+}
+function drawPlatforms(box,capId){const q=[['p0','Transaktion · zweiseitig','#4f7cff',60,40,'Marktplatz (eBay, Amazon)'],['p1','Innovation · zweiseitig','#37d399',330,40,'App-Ökosystem (iOS, Android)'],['p2','Transaktion · mehrseitig','#ffb43a',60,160,'Sharing (Uber, Airbnb)'],['p3','Innovation · mehrseitig','#7b9bff',330,160,'Entwickler-Plattform']];
+ let g='';q.forEach(x=>{g+=`<g class="hot" id="${x[0]}"><rect x="${x[3]}" y="${x[4]}" width="250" height="110" rx="10" fill="${x[2]}22" stroke="${x[2]}"/><text x="${x[3]+125}" y="${x[4]+60}" fill="#e8edf7" font-size="13" text-anchor="middle" font-weight="bold">${x[1]}</text></g>`;});
+ document.getElementById(box).innerHTML=`<svg viewBox="0 0 600 300" xmlns="http://www.w3.org/2000/svg" style="min-width:590px">
+  <text x="185" y="24" fill="#9aa7c2" font-size="12" text-anchor="middle">Transaktionsplattform</text><text x="455" y="24" fill="#9aa7c2" font-size="12" text-anchor="middle">Innovationsplattform</text>
+  <text x="30" y="100" fill="#9aa7c2" font-size="11" text-anchor="middle" transform="rotate(-90,30,100)">zweiseitig</text><text x="30" y="220" fill="#9aa7c2" font-size="11" text-anchor="middle" transform="rotate(-90,30,220)">mehrseitig</text>${g}</svg>`;
+ q.forEach(x=>document.getElementById(x[0]).onclick=()=>cap(capId,`<b>${x[1]}:</b> z. B. ${x[5]}. Dimensionen: Art (Transaktion vs. Innovation) × Anzahl der Nutzerseiten.`));
+}
+function drawStrat(box,capId){const s=['Analyse der\nAusgangssituation','Formulierung\nvon Alternativen','Bewertung','Auswahl','Umsetzung\n& Kontrolle'];const col=['#4f7cff','#7b9bff','#37d399','#ffb43a','#ff5c72'];
+ let g='';s.forEach((t,i)=>{const x=20+i*138;g+=`<g class="hot" id="st${i}"><rect x="${x}" y="90" width="120" height="70" rx="10" fill="${col[i]}22" stroke="${col[i]}"/>`;
+  t.split('\n').forEach((line,li)=>g+=`<text x="${x+60}" y="${120+li*16-((t.split('\n').length-1)*8)}" fill="#e8edf7" font-size="11.5" text-anchor="middle">${line}</text>`);
+  g+=`<circle cx="${x+60}" cy="76" r="12" fill="${col[i]}"/><text x="${x+60}" y="81" fill="#0f1420" font-size="13" text-anchor="middle" font-weight="bold">${i+1}</text></g>`;
+  if(i<4)g+=`<line x1="${x+120}" y1="125" x2="${x+138}" y2="125" stroke="#6b779a" stroke-width="2"/><polygon points="${x+138},125 ${x+130},120 ${x+130},130" fill="#6b779a"/>`;});
+ document.getElementById(box).innerHTML=`<svg viewBox="0 0 720 190" xmlns="http://www.w3.org/2000/svg" style="min-width:700px">${g}</svg>`;
+ const info=['<b>1. Analyse der Ausgangssituation:</b> Umwelt (Makro), Markt (Mikro) & eigenes Unternehmen analysieren (SWOT, strat. Gruppen …).','<b>2. Formulierung:</b> alternative Marketingstrategien entwickeln (z. B. Ansoff, Wettbewerbsstrategien).','<b>3. Bewertung:</b> Alternativen anhand von Konsistenz-, Informations-, inhaltlichen & Realisierbarkeitskriterien prüfen.','<b>4. Auswahl:</b> die geeignetste Strategie wählen.','<b>5. Umsetzung & Kontrolle:</b> implementieren und anhand der Marketingziele kontrollieren.'];
+ for(let i=0;i<5;i++)document.getElementById('st'+i).onclick=()=>cap(capId,info[i]);
+}
+
+document.getElementById('resetBtn').onclick=resetAll;
+renderNav();renderOverview();
+document.querySelector('[data-mod="__overview"]').classList.add('active');
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});
+}
+</script>
+</body>
+</html>

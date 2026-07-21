@@ -1,0 +1,26 @@
+{
+  "name": "Marketing Klausur – Interaktives Lerntool",
+  "short_name": "Marketing Klausur",
+  "description": "Interaktives Lerntool für die Marketing-Klausur (FAU): Konzepte, Rechen-Trainer, MC-Selbsttest, Karteikarten & Diagramme.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0f1420",
+  "theme_color": "#0f1420",
+  "lang": "de",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
